@@ -1,0 +1,55 @@
+<resources>
+
+    <!-- MEDIUM CONTRAST -->
+    <style name="ThemeOverlay.AppTheme.MediumContrast"
+        parent="Theme.Material3.Light.NoActionBar">
+
+        <item name="colorPrimary">@color/sun_primary</item>
+        <item name="colorOnPrimary">@color/sun_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/sun_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/sun_onPrimaryContainer</item>
+
+        <item name="colorSecondary">@color/sun_secondary</item>
+        <item name="colorOnSecondary">@color/sun_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/sun_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/sun_onSecondaryContainer</item>
+
+        <item name="colorTertiary">@color/sun_tertiary</item>
+        <item name="colorOnTertiary">@color/sun_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/sun_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/sun_onTertiaryContainer</item>
+
+        <item name="android:colorBackground">@color/sun_background</item>
+        <item name="colorOnBackground">@color/sun_onBackground</item>
+
+        <item name="colorSurface">@color/sun_surface</item>
+        <item name="colorOnSurface">@color/sun_onSurface</item>
+    </style>
+
+    <!-- HIGH CONTRAST -->
+    <style name="ThemeOverlay.AppTheme.HighContrast"
+        parent="Theme.Material3.Light.NoActionBar">
+
+        <item name="colorPrimary">#FF4A1F</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#B22E10</item>
+        <item name="colorOnPrimaryContainer">#FFFFFF</item>
+
+        <item name="colorSecondary">#A8744D</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorSecondaryContainer">#6B3F24</item>
+        <item name="colorOnSecondaryContainer">#FFFFFF</item>
+
+        <item name="colorTertiary">#4B3FD6</item>
+        <item name="colorOnTertiary">#FFFFFF</item>
+        <item name="colorTertiaryContainer">#2A1F7A</item>
+        <item name="colorOnTertiaryContainer">#FFFFFF</item>
+
+        <item name="android:colorBackground">#FFF3EC</item>
+        <item name="colorOnBackground">#1A120F</item>
+
+        <item name="colorSurface">#FFF3EC</item>
+        <item name="colorOnSurface">#000000</item>
+    </style>
+
+</resources>

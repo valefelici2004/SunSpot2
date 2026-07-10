@@ -1,0 +1,44 @@
+<resources>
+
+    <!-- Core Sunset Palette -->
+    <color name="md_theme_primary">#E46A3A</color> <!-- coral sunset -->
+    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_primaryContainer">#FFD6C6</color>
+    <color name="md_theme_onPrimaryContainer">#5A2413</color>
+
+    <color name="md_theme_secondary">#7A5C52</color> <!-- warm brown -->
+    <color name="md_theme_onSecondary">#FFFFFF</color>
+    <color name="md_theme_secondaryContainer">#F3DDD6</color>
+    <color name="md_theme_onSecondaryContainer">#3F2B25</color>
+
+    <color name="md_theme_tertiary">#8B6F2C</color> <!-- golden sun -->
+    <color name="md_theme_onTertiary">#FFFFFF</color>
+    <color name="md_theme_tertiaryContainer">#F7E3A6</color>
+    <color name="md_theme_onTertiaryContainer">#3D2F10</color>
+
+    <!-- Background -->
+    <color name="md_theme_background">#FFF6F1</color>
+    <color name="md_theme_onBackground">#241A17</color>
+
+    <color name="md_theme_surface">#FFF6F1</color>
+    <color name="md_theme_onSurface">#241A17</color>
+
+    <color name="md_theme_surfaceVariant">#F5E2DC</color>
+    <color name="md_theme_onSurfaceVariant">#5A4742</color>
+
+    <color name="md_theme_outline">#8A736D</color>
+    <color name="md_theme_outlineVariant">#E3CEC7</color>
+
+    <color name="md_theme_error">#BA1A1A</color>
+    <color name="md_theme_onError">#FFFFFF</color>
+    <color name="md_theme_errorContainer">#FFDAD6</color>
+    <color name="md_theme_onErrorContainer">#93000A</color>
+
+    <!-- Surface scale -->
+    <color name="md_theme_surfaceContainerLowest">#FFFFFF</color>
+    <color name="md_theme_surfaceContainerLow">#FFF0EA</color>
+    <color name="md_theme_surfaceContainer">#FBE4DC</color>
+    <color name="md_theme_surfaceContainerHigh">#F5D8CF</color>
+    <color name="md_theme_surfaceContainerHighest">#EFCBC0</color>
+
+</resources>
