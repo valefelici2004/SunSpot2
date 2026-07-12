@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-package com.group3boot.sunspot.ui.welcome.fragments;
+
 
 import static com.group3boot.sunspot.util.Constants.USER_COLLISION_ERROR;
 import static com.group3boot.sunspot.util.Constants.WEAK_PASSWORD_ERROR;
@@ -30,6 +30,7 @@ import androidx.navigation.Navigation;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.group3boot.sunspot.R;
+import com.group3boot.sunspot.models.UserResult;
 import com.group3boot.sunspot.repository.user.IUserRepository;
 import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModel;
 import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModelFactory;
@@ -85,7 +86,8 @@ public class SignUpFragment extends Fragment {
                             if (result.isSuccess()) {
                                 Navigation.findNavController(v).navigate(R.id.action_signUpFragment2_to_homeActivity);
                             } else {
-                                showError(getErrorMessage(result.getMessage()));
+                                UserResult.Error errorResult = (UserResult.Error) result;
+                                showError(getErrorMessage(errorResult.getMessage()));
                             }
                         });
             }

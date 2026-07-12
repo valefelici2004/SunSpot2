@@ -22,4 +22,26 @@
     <string name="error_collision_user">Esiste già un account con questa email</string>
     <string name="error_unexpected">Si è verificato un errore, riprova</string>
     <string name="error_password_mismatch">Le password non coincidono</string>
+    <string name="temperature_format">%.0f°C</string>
+    <string name="nearby_spots_title">Spot vicino a te</string>
+    <string name="no_nearby_spots">Nessuno spot trovato nelle vicinanze</string>
+    <string name="error_location_permission">Permesso posizione negato</string>
+    <string name="error_location_unavailable">Posizione non disponibile</string>
+    <string name="error_weather_unavailable">Meteo non disponibile</string>
+    <string name="tap_map_to_add_spot">Tocca la mappa per scegliere dove aggiungere lo spot</string>
+    <string name="add_spot">Aggiungi spot</string>
+    <string name="open_in_maps">Apri in Google Maps</string>
+    <string name="sunrise_format">Alba: %s</string>
+    <string name="sunset_format">Tramonto: %s</string>
+    <string name="hint_spot_name">Nome dello spot</string>
+    <string name="hint_spot_posizione">Posizione (es. zona, città)</string>
+    <string name="action_save_spot">Salva spot</string>
+    <string name="error_spot_name_empty">Inserisci un nome</string>
+    <string name="avatar_utente">Avatar utente</string>
+    <string name="modifica_profilo">Modifica profilo</string>
+    <string name="i_miei_spot">I miei spot</string>
+    <string name="nessuno_spot_creato">Non hai ancora aggiunto nessuno spot</string>
+    <string name="i_miei_preferiti">I miei preferiti</string>
+    <string name="nessun_preferito">Nessuno spot tra i preferiti</string>
+    <string name="logout">Esci</string>
 </resources>

@@ -91,8 +91,12 @@ public class SpotRecyclerAdapter extends RecyclerView.Adapter<SpotRecyclerAdapte
         viewHolder.getTextViewPosizione().setText(currentSpot.getPosizione());
         viewHolder.getFavoriteCheckbox().setChecked(currentSpot.isLiked());
 
+        String firstPhoto = (currentSpot.getPhotoUrls() != null && !currentSpot.getPhotoUrls().isEmpty())
+                ? currentSpot.getPhotoUrls().get(0)
+                : null;
+
         Glide.with(context)
-                .load(currentSpot.getPhotoUrl())
+                .load(firstPhoto)
                 .placeholder(new ColorDrawable(context.getColor(R.color.md_theme_inverseOnSurface)))
                 .into(viewHolder.getImageView());
 

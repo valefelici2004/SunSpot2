@@ -1,4 +1,7 @@
 <resources>
+    <color name="text_secondary">@color/md_theme_onSurfaceVariant</color>
+    <color name="divider">@color/md_theme_outlineVariant</color>
+    <color name="error">@color/md_theme_error</color>
     <color name="md_theme_primary">#8F4C38</color>
     <color name="md_theme_onPrimary">#FFFFFF</color>
     <color name="md_theme_primaryContainer">#FFDBD1</color>

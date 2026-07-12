@@ -9,6 +9,7 @@ import com.group3boot.sunspot.models.SpotResult;
 import com.group3boot.sunspot.source.spot.BaseSpotLocalDataSource;
 import com.group3boot.sunspot.source.spot.BaseSpotRemoteDataSource;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,6 +20,8 @@ public class SpotRepository implements SpotCallback {
     private final MutableLiveData<SpotResult> allSpotsMutableLiveData;
     private final MutableLiveData<SpotResult> favoriteSpotsMutableLiveData;
     private final MutableLiveData<SpotResult> mySpotsMutableLiveData;
+
+    private final MutableLiveData<SpotResult> addSpotMutableLiveData;
     private final BaseSpotRemoteDataSource spotRemoteDataSource;
     private final BaseSpotLocalDataSource spotLocalDataSource;
 
@@ -66,6 +69,11 @@ public class SpotRepository implements SpotCallback {
 
     public void deleteSpot(Spot spot) {
         spotRemoteDataSource.deleteSpot(spot);
+    }
+
+    public MutableLiveData<SpotResult> addSpot(Spot spot) {
+        spotRemoteDataSource.addSpot(spot);
+        return addSpotMutableLiveData;
     }
 
     // --- Metodi del callback ---
@@ -119,5 +127,12 @@ public class SpotRepository implements SpotCallback {
     @Override
     public void onDeleteSpotSuccess(List<Spot> mySpots) {
         mySpotsMutableLiveData.postValue(new SpotResult.Success(mySpots));
+    }
+
+    @Override
+    public void onAddSpotSuccess(Spot spot) {
+        spot.setAddedByMe(true);
+        spotLocalDataSource.insertSpot(spot);
+        addSpotMutableLiveData.postValue(new SpotResult.Success(Collections.singletonList(spot)));
     }
 }

@@ -1,0 +1,26 @@
+{
+    "spots": [
+    {
+    "firebaseId": "spot1",
+    "name": "Punta Panoramica",
+    "posizione": "Colline di Brescia",
+    "latitude": 45.5845,
+    "longitude": 10.2650,
+    "photoUrls": [],
+    "addedByUserId": "user1",
+    "liked": false,
+    "addedByMe": false
+    },
+    {
+    "firebaseId": "spot2",
+    "name": "Lago di Garda Est",
+    "posizione": "Costa orientale del lago",
+    "latitude": 45.5000,
+    "longitude": 10.6500,
+    "photoUrls": [],
+    "addedByUserId": "user2",
+    "liked": false,
+    "addedByMe": false
+    }
+    ]
+    }sources></resources>

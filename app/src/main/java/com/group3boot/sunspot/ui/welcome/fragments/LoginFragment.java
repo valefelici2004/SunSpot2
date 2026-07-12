@@ -19,6 +19,7 @@ import androidx.navigation.Navigation;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.group3boot.sunspot.R;
+import com.group3boot.sunspot.models.UserResult;
 import com.group3boot.sunspot.repository.user.IUserRepository;
 import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModel;
 import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModelFactory;
@@ -68,14 +69,15 @@ public class LoginFragment extends Fragment {
             String password = editTextPassword.getText() != null ? editTextPassword.getText().toString().trim() : "";
 
             if (isEmailOk(email) & isPasswordOk(password)) {
-                userViewModel.getUserMutableLiveData(null, email, password, true)
+                userViewModel.getUserMutableLiveData(name, email, password, false)
                         .observe(getViewLifecycleOwner(), result -> {
+                            progressBar.setVisibility(View.GONE);
+
                             if (result.isSuccess()) {
-                                Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_homeActivity);
+                                Navigation.findNavController(v).navigate(R.id.action_signUpFragment2_to_homeActivity);
                             } else {
-                                Snackbar.make(requireActivity().findViewById(android.R.id.content),
-                                        getErrorMessage(result.getMessage()),
-                                        Snackbar.LENGTH_SHORT).show();
+                                UserResult.Error errorResult = (UserResult.Error) result;
+                                showError(getErrorMessage(errorResult.getMessage()));
                             }
                         });
             }

@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/password"
                 app:startIconDrawable="@drawable/outline_asterisk_24"
-                app:endIconMode="password_toggle">>
+                app:endIconMode="password_toggle">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/password"

@@ -47,4 +47,7 @@ public class Constants {
     public static final String USER_COLLISION_ERROR = "user_collision_error";
 
     public static final int MINIMUM_LENGTH_PASSWORD = 6;
+
+    public static final String BUNDLE_KEY_LATITUDE = "latitude";
+    public static final String BUNDLE_KEY_LONGITUDE = "longitude";
 }
