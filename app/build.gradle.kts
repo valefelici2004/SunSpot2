@@ -1,9 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-<<<<<<< HEAD
     id("com.google.gms.google-services")
-=======
->>>>>>> 3c9a91715bcb86e46c3186ac409569b3da6545b3
 }
 
 android {
@@ -58,10 +55,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.13.2")
     implementation("com.squareup.retrofit2:converter-gson:3.0.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
-<<<<<<< HEAD
     implementation(platform("com.google.firebase:firebase-bom:34.16.0"))
     implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-database")
-=======
->>>>>>> 3c9a91715bcb86e46c3186ac409569b3da6545b3
+    implementation("com.google.firebase:firebase-firestore")
 }

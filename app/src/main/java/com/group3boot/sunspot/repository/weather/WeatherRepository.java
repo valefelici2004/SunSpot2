@@ -1,10 +1,9 @@
-package com.group3boot.sunspot.repository;
+package com.group3boot.sunspot.repository.weather;
 
 import androidx.lifecycle.MutableLiveData;
 
 import com.group3boot.sunspot.models.WeatherResult;
-import com.group3boot.sunspot.source.WeatherCallback;
-import com.group3boot.sunspot.source.WeatherRemoteDataSource;
+import com.group3boot.sunspot.source.weather.WeatherRemoteDataSource;
 
 /**
  * Repository class per ottenere il meteo da Open-Meteo.
@@ -34,4 +33,4 @@ public class WeatherRepository implements WeatherCallback {
     public void onFailure(Exception exception) {
         weatherMutableLiveData.postValue(new WeatherResult.Error(exception.getMessage()));
     }
-}}
+}

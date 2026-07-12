@@ -1,8 +1,9 @@
-package com.group3boot.sunspot.source;
+package com.group3boot.sunspot.source.weather;
 
 import androidx.annotation.NonNull;
 
 import com.group3boot.sunspot.models.WeatherResponse;
+import com.group3boot.sunspot.repository.weather.WeatherCallback;
 import com.group3boot.sunspot.service.WeatherAPIService;
 import com.group3boot.sunspot.util.Constants;
 

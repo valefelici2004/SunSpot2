@@ -1,12 +1,13 @@
-package com.group3boot.sunspot.repository;
+package com.group3boot.sunspot.repository.spot;
 
 import androidx.lifecycle.MutableLiveData;
 
+
+import com.group3boot.sunspot.util.Constants;
 import com.group3boot.sunspot.models.Spot;
 import com.group3boot.sunspot.models.SpotResult;
-import com.group3boot.sunspot.source.BaseSpotLocalDataSource;
-import com.group3boot.sunspot.source.BaseSpotRemoteDataSource;
-import com.group3boot.sunspot.source.SpotCallback;
+import com.group3boot.sunspot.source.spot.BaseSpotLocalDataSource;
+import com.group3boot.sunspot.source.spot.BaseSpotRemoteDataSource;
 
 import java.util.List;
 

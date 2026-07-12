@@ -1,16 +1,23 @@
 package com.group3boot.sunspot.util;
 
+
 import android.app.Application;
 
 import com.group3boot.sunspot.database.SpotRoomDatabase;
-import com.group3boot.sunspot.repository.WeatherRepository;
+import com.group3boot.sunspot.repository.spot.SpotRepository;
+import com.group3boot.sunspot.repository.user.UserRepository;
+import com.group3boot.sunspot.repository.weather.WeatherRepository;
 import com.group3boot.sunspot.service.WeatherAPIService;
-import com.group3boot.sunspot.source.BaseSpotLocalDataSource;
-import com.group3boot.sunspot.source.BaseSpotRemoteDataSource;
-import com.group3boot.sunspot.source.SpotFirebaseDataSource;
-import com.group3boot.sunspot.source.SpotLocalDataSource;
-import com.group3boot.sunspot.source.SpotMockDataSource;
-import com.group3boot.sunspot.source.WeatherRemoteDataSource;
+import com.group3boot.sunspot.source.spot.BaseSpotLocalDataSource;
+import com.group3boot.sunspot.source.spot.BaseSpotRemoteDataSource;
+import com.group3boot.sunspot.source.spot.SpotRemoteDataSource;
+import com.group3boot.sunspot.source.spot.SpotLocalDataSource;
+import com.group3boot.sunspot.source.spot.SpotMockDataSource;
+import com.group3boot.sunspot.source.weather.WeatherRemoteDataSource;
+import com.group3boot.sunspot.source.user.BaseUserAuthenticationRemoteDataSource;
+import com.group3boot.sunspot.source.user.BaseUserDataRemoteDataSource;
+import com.group3boot.sunspot.source.user.UserAuthenticationFirebaseDataSource;
+import com.group3boot.sunspot.source.user.UserFirebaseDataSource;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -75,7 +82,7 @@ public class ServiceLocator {
             JSONParserUtils jsonParserUtil = new JSONParserUtils(application);
             spotRemoteDataSource = new SpotMockDataSource(jsonParserUtil);
         } else {
-            spotRemoteDataSource = new SpotFirebaseDataSource();
+            spotRemoteDataSource = new SpotRemoteDataSource();
         }
 
         spotLocalDataSource = new SpotLocalDataSource(getSpotDao(application), sharedPreferencesUtil);
@@ -90,5 +97,20 @@ public class ServiceLocator {
     public WeatherRepository getWeatherRepository() {
         WeatherRemoteDataSource weatherRemoteDataSource = new WeatherRemoteDataSource(getWeatherAPIService());
         return new WeatherRepository(weatherRemoteDataSource);
+    }
+
+    /**
+     * Restituisce un'istanza di UserRepository, già assemblata con le DataSource
+     * di autenticazione e dati profilo.
+     * @return Un'istanza di UserRepository.
+     */
+    public UserRepository getUserRepository() {
+        BaseUserAuthenticationRemoteDataSource userAuthDataSource =
+                new UserAuthenticationFirebaseDataSource();
+
+        BaseUserDataRemoteDataSource userDataSource =
+                new UserFirebaseDataSource();
+
+        return new UserRepository(userAuthDataSource, userDataSource);
     }
 }

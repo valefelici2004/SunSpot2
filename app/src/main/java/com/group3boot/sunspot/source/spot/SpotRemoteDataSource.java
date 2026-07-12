@@ -1,4 +1,4 @@
-package com.group3boot.sunspot.source;
+package com.group3boot.sunspot.source.spot;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.group3boot.sunspot.models.Spot;

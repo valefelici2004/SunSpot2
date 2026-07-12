@@ -1,4 +1,4 @@
-package com.group3boot.sunspot.source;
+package com.group3boot.sunspot.repository.spot;
 
 import com.group3boot.sunspot.models.Spot;
 

@@ -1,4 +1,4 @@
-package com.group3boot.sunspot.source;
+package com.group3boot.sunspot.source.spot;
 
 import static com.group3boot.sunspot.util.Constants.UNEXPECTED_ERROR;
 

@@ -1,6 +1,7 @@
-package com.group3boot.sunspot.source;
+package com.group3boot.sunspot.source.spot;
 
 import com.group3boot.sunspot.models.Spot;
+import com.group3boot.sunspot.repository.spot.SpotCallback;
 
 public abstract class BaseSpotRemoteDataSource {
     protected SpotCallback spotCallback;

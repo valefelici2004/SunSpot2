@@ -14,11 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.group3boot.sunspot.R;
-<<<<<<< HEAD
-import com.group3boot.sunspot.model.Spot;
-=======
 import com.group3boot.sunspot.models.Spot;
->>>>>>> 3c9a91715bcb86e46c3186ac409569b3da6545b3
 
 import java.util.List;
 
@@ -61,15 +57,9 @@ public class SpotRecyclerAdapter extends RecyclerView.Adapter<SpotRecyclerAdapte
         @Override
         public void onClick(View v) {
             if (v.getId() == R.id.favoriteButton) {
-<<<<<<< HEAD
                 onItemClickListener.onFavoriteButtonPressed(getBindingAdapterPosition());
             } else {
                 onItemClickListener.onSpotItemClick(spotList.get(getBindingAdapterPosition()));
-=======
-                onItemClickListener.onFavoriteButtonPressed(getAdapterPosition());
-            } else {
-                onItemClickListener.onSpotItemClick(spotList.get(getAdapterPosition()));
->>>>>>> 3c9a91715bcb86e46c3186ac409569b3da6545b3
             }
         }
     }
@@ -103,11 +93,7 @@ public class SpotRecyclerAdapter extends RecyclerView.Adapter<SpotRecyclerAdapte
 
         Glide.with(context)
                 .load(currentSpot.getPhotoUrl())
-<<<<<<< HEAD
-                .placeholder(new ColorDrawable(context.getColor(R.color.placeholder_gray)))
-=======
                 .placeholder(new ColorDrawable(context.getColor(R.color.md_theme_inverseOnSurface)))
->>>>>>> 3c9a91715bcb86e46c3186ac409569b3da6545b3
                 .into(viewHolder.getImageView());
 
         if (!heartVisible) {
@@ -119,8 +105,4 @@ public class SpotRecyclerAdapter extends RecyclerView.Adapter<SpotRecyclerAdapte
     public int getItemCount() {
         return spotList.size();
     }
-<<<<<<< HEAD
-}}
-=======
 }
->>>>>>> 3c9a91715bcb86e46c3186ac409569b3da6545b3
