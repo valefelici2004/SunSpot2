@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/HomeFragment"
+        android:title="@string/home"
+        android:icon="@drawable/outline_home_24"
+        />
+
+    <item
+        android:id="@+id/MapsFragment"
+        android:title="@string/maps"
+        android:icon="@drawable/outline_globe_location_pin_24"
+
+        />
+
+    <item
+        android:id="@+id/UserFragment"
+        android:title="@string/user"
+        android:icon="@drawable/outline_account_circle_24"
+        />
+
+</menu>

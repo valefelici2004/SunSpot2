@@ -1,0 +1,39 @@
+{
+  "latitude": 41.875,
+  "longitude": 12.5,
+  "generationtime_ms": 0.04744529724121094,
+  "utc_offset_seconds": 7200,
+  "timezone": "Europe/Rome",
+  "timezone_abbreviation": "GMT+2",
+  "elevation": 58.0,
+  "current_units": {
+    "time": "iso8601",
+    "interval": "seconds",
+    "temperature_2m": "°C",
+    "weather_code": "wmo code",
+    "is_day": ""
+  },
+  "current": {
+    "time": "2026-07-03T11:30",
+    "interval": 900,
+    "temperature_2m": 31.2,
+    "weather_code": 0,
+    "is_day": 1
+  },
+  "daily_units": {
+    "time": "iso8601",
+    "sunrise": "iso8601",
+    "sunset": "iso8601"
+  },
+  "daily": {
+    "time": [
+      "2026-07-03"
+    ],
+    "sunrise": [
+      "2026-07-03T05:39"
+    ],
+    "sunset": [
+      "2026-07-03T20:48"
+    ]
+  }
+}
