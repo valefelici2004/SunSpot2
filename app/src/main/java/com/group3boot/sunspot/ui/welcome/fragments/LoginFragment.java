@@ -3,7 +3,6 @@ package com.group3boot.sunspot.ui.welcome.fragments;
 import static com.group3boot.sunspot.util.Constants.INVALID_CREDENTIALS_ERROR;
 import static com.group3boot.sunspot.util.Constants.INVALID_USER_ERROR;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -21,7 +20,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.group3boot.sunspot.R;
 import com.group3boot.sunspot.repository.user.IUserRepository;
-import com.group3boot.sunspot.ui.home.HomeActivity;
 import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModel;
 import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModelFactory;
 import com.group3boot.sunspot.util.ServiceLocator;
@@ -55,15 +53,15 @@ public class LoginFragment extends Fragment {
 
         // Se l'utente è già loggato (sessione precedente), salta direttamente alla Home
         if (userViewModel.getLoggedUser() != null) {
-            goToHome();
+            Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_homeActivity);
             return;
         }
 
-        editTextEmail = view.findViewById(R.id.textInputEmail);
-        editTextPassword = view.findViewById(R.id.textInputPassword);
+        editTextEmail = view.findViewById(R.id.email);
+        editTextPassword = view.findViewById(R.id.password);
 
-        Button loginButton = view.findViewById(R.id.loginButton);
-        Button signupButton = view.findViewById(R.id.buttonNewAccount);
+        Button loginButton = view.findViewById(R.id.accesso);
+        Button signupButton = view.findViewById(R.id.registrazione);
 
         loginButton.setOnClickListener(v -> {
             String email = editTextEmail.getText() != null ? editTextEmail.getText().toString().trim() : "";
@@ -73,7 +71,7 @@ public class LoginFragment extends Fragment {
                 userViewModel.getUserMutableLiveData(null, email, password, true)
                         .observe(getViewLifecycleOwner(), result -> {
                             if (result.isSuccess()) {
-                                goToHome();
+                                Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_homeActivity);
                             } else {
                                 Snackbar.make(requireActivity().findViewById(android.R.id.content),
                                         getErrorMessage(result.getMessage()),
@@ -84,13 +82,7 @@ public class LoginFragment extends Fragment {
         });
 
         signupButton.setOnClickListener(v ->
-                Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_signupFragment));
-    }
-
-    private void goToHome() {
-        Intent intent = new Intent(getContext(), HomeActivity.class);
-        startActivity(intent);
-        requireActivity().finish();
+                Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_signUpFragment2));
     }
 
     private String getErrorMessage(String errorType) {

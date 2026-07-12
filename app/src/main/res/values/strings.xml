@@ -21,4 +21,5 @@
     <string name="error_name_signup">Inserisci il tuo nome</string>
     <string name="error_collision_user">Esiste già un account con questa email</string>
     <string name="error_unexpected">Si è verificato un errore, riprova</string>
+    <string name="error_password_mismatch">Le password non coincidono</string>
 </resources>
