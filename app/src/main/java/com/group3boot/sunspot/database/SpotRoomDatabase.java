@@ -3,7 +3,10 @@ package com.group3boot.sunspot.database;
 import static com.group3boot.sunspot.util.Constants.DATABASE_VERSION;
 
 import android.content.Context;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3c9a91715bcb86e46c3186ac409569b3da6545b3
 import com.group3boot.sunspot.util.Constants;
 
 import androidx.room.Database;

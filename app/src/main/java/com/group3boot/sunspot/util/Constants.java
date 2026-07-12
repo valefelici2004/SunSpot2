@@ -2,12 +2,16 @@ package com.group3boot.sunspot.util;
 
 public class Constants {
 
+<<<<<<< HEAD
     // Database
     public static final int DATABASE_VERSION = 1;
     public static final String SAVED_SPOTS_DATABASE = "sunspot_database";
 
     // Weather API (Open-Meteo)
     public static final String WEATHER_API_BASE_URL = "https://api.open-meteo.com/";
+=======
+    public static final String WEATHER_API_BASE_URL = "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,weather_code,is_day&daily=sunrise,sunset&forecast_days=1&timezone=auto";
+>>>>>>> 3c9a91715bcb86e46c3186ac409569b3da6545b3
     public static final String WEATHER_FORECAST_ENDPOINT = "v1/forecast";
     public static final String WEATHER_LATITUDE_PARAMETER = "latitude";
     public static final String WEATHER_LONGITUDE_PARAMETER = "longitude";
@@ -16,6 +20,7 @@ public class Constants {
     public static final String WEATHER_FORECAST_DAYS_PARAMETER = "forecast_days";
     public static final String WEATHER_TIMEZONE_PARAMETER = "timezone";
 
+<<<<<<< HEAD
     public static final String WEATHER_CURRENT_VALUE = "temperature_2m,weather_code,is_day";
     public static final String WEATHER_DAILY_VALUE = "sunrise,sunset";
 
@@ -39,3 +44,9 @@ public class Constants {
     public static final String WEATHER_API_ERROR = "weather_api_error";
     public static final String FIREBASE_ERROR = "firebase_error";
 }
+=======
+
+    public static final int DATABASE_VERSION = 1;
+    public static final String SAVED_SPOTS_DATABASE = "sunspot_database";
+}
+>>>>>>> 3c9a91715bcb86e46c3186ac409569b3da6545b3
