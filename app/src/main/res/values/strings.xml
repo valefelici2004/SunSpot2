@@ -16,4 +16,9 @@
     <string name="cognome">Cognome</string>
     <string name="conferma_password">Conferma password</string>
     <string name="sign_up">Sign up</string>
+    <string name="error_email_login">Inserisci un\'email valida</string>
+    <string name="error_password_login">La password deve avere almeno 6 caratteri</string>
+    <string name="error_name_signup">Inserisci il tuo nome</string>
+    <string name="error_collision_user">Esiste già un account con questa email</string>
+    <string name="error_unexpected">Si è verificato un errore, riprova</string>
 </resources>

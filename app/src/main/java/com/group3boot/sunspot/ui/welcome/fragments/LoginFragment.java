@@ -1,34 +1,51 @@
 package com.group3boot.sunspot.ui.welcome.fragments;
 
+import static com.group3boot.sunspot.util.Constants.INVALID_CREDENTIALS_ERROR;
+import static com.group3boot.sunspot.util.Constants.INVALID_USER_ERROR;
+
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.group3boot.sunspot.R;
+import com.group3boot.sunspot.repository.user.IUserRepository;
 import com.group3boot.sunspot.ui.home.HomeActivity;
+import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModel;
+import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModelFactory;
+import com.group3boot.sunspot.util.ServiceLocator;
 
 public class LoginFragment extends Fragment {
 
+    private TextInputEditText editTextEmail, editTextPassword;
+    private UserViewModel userViewModel;
+
+    public LoginFragment() {}
+
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        IUserRepository userRepository = ServiceLocator.getInstance().getUserRepository();
+        userViewModel = new ViewModelProvider(
+                requireActivity(),
+                new UserViewModelFactory(userRepository)).get(UserViewModel.class);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_login, container, false);
     }
 
@@ -36,39 +53,74 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //BOTTONE ACCESSO
-        //TextInputLayout emailLayout = view.findViewById(R.id.emailLayout);
-        TextInputEditText email = view.findViewById(R.id.email);
-        //TextInputLayout pwLayout = view.findViewById(R.id.passwordLayout);
-        TextInputEditText pw = view.findViewById(R.id.password);
-        Button bottoneAccesso = view.findViewById(R.id.accesso);
-        bottoneAccesso.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //controllo email valida
-                String emailStringa = email.getText().toString().trim();
-                //controllo password corretta
-                String pwStringa = pw.getText().toString().trim();
-                //vado alla home
+        // Se l'utente è già loggato (sessione precedente), salta direttamente alla Home
+        if (userViewModel.getLoggedUser() != null) {
+            goToHome();
+            return;
+        }
 
-                //intent esplicito login-->home CAMBIARE MAIN CON HOME!!!
-                Intent intent = new Intent();
-                intent.setClass(getContext(), HomeActivity.class);
-                startActivity(intent);
+        editTextEmail = view.findViewById(R.id.textInputEmail);
+        editTextPassword = view.findViewById(R.id.textInputPassword);
 
-                //Modo con NAVIGATION
-                Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_homeActivity);
+        Button loginButton = view.findViewById(R.id.loginButton);
+        Button signupButton = view.findViewById(R.id.buttonNewAccount);
 
+        loginButton.setOnClickListener(v -> {
+            String email = editTextEmail.getText() != null ? editTextEmail.getText().toString().trim() : "";
+            String password = editTextPassword.getText() != null ? editTextPassword.getText().toString().trim() : "";
+
+            if (isEmailOk(email) & isPasswordOk(password)) {
+                userViewModel.getUserMutableLiveData(null, email, password, true)
+                        .observe(getViewLifecycleOwner(), result -> {
+                            if (result.isSuccess()) {
+                                goToHome();
+                            } else {
+                                Snackbar.make(requireActivity().findViewById(android.R.id.content),
+                                        getErrorMessage(result.getMessage()),
+                                        Snackbar.LENGTH_SHORT).show();
+                            }
+                        });
             }
         });
 
-        //BOTTONE REGISTRAZIONE
-        Button bottoneRegistrazione = view.findViewById(R.id.registrazione);
-        bottoneRegistrazione.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //vado alla registrazione
-            }
-        });
+        signupButton.setOnClickListener(v ->
+                Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_signupFragment));
+    }
+
+    private void goToHome() {
+        Intent intent = new Intent(getContext(), HomeActivity.class);
+        startActivity(intent);
+        requireActivity().finish();
+    }
+
+    private String getErrorMessage(String errorType) {
+        if (errorType == null) return getString(R.string.error_unexpected);
+
+        switch (errorType) {
+            case INVALID_CREDENTIALS_ERROR:
+                return getString(R.string.error_password_login);
+            case INVALID_USER_ERROR:
+                return getString(R.string.error_email_login);
+            default:
+                return getString(R.string.error_unexpected);
+        }
+    }
+
+    private boolean isEmailOk(String email) {
+        if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            editTextEmail.setError(getString(R.string.error_email_login));
+            return false;
+        }
+        editTextEmail.setError(null);
+        return true;
+    }
+
+    private boolean isPasswordOk(String password) {
+        if (password.isEmpty()) {
+            editTextPassword.setError(getString(R.string.error_password_login));
+            return false;
+        }
+        editTextPassword.setError(null);
+        return true;
     }
 }

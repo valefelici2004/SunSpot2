@@ -3,18 +3,15 @@ package com.group3boot.sunspot.repository.user;
 import androidx.lifecycle.MutableLiveData;
 
 import com.group3boot.sunspot.models.User;
-import com.group3boot.sunspot.models.User;
+import com.group3boot.sunspot.models.UserResult;
 import com.group3boot.sunspot.source.user.BaseUserAuthenticationRemoteDataSource;
 import com.group3boot.sunspot.source.user.BaseUserDataRemoteDataSource;
 
-/**
- * Repository class per gestire l'autenticazione e i dati dell'utente.
- */
 public class UserRepository implements IUserRepository, UserResponseCallback {
 
     private final BaseUserAuthenticationRemoteDataSource userRemoteDataSource;
     private final BaseUserDataRemoteDataSource userDataRemoteDataSource;
-    private final MutableLiveData<User> userMutableLiveData;
+    private final MutableLiveData<UserResult> userMutableLiveData;
 
     public UserRepository(BaseUserAuthenticationRemoteDataSource userRemoteDataSource,
                           BaseUserDataRemoteDataSource userDataRemoteDataSource) {
@@ -26,7 +23,7 @@ public class UserRepository implements IUserRepository, UserResponseCallback {
     }
 
     @Override
-    public MutableLiveData<User> getUser(String name, String email, String password, boolean isUserRegistered) {
+    public MutableLiveData<UserResult> getUser(String name, String email, String password, boolean isUserRegistered) {
         if (isUserRegistered) {
             signIn(email, password);
         } else {
@@ -41,7 +38,7 @@ public class UserRepository implements IUserRepository, UserResponseCallback {
     }
 
     @Override
-    public MutableLiveData<User> logout() {
+    public MutableLiveData<UserResult> logout() {
         userRemoteDataSource.logout();
         return userMutableLiveData;
     }
@@ -56,36 +53,30 @@ public class UserRepository implements IUserRepository, UserResponseCallback {
         userRemoteDataSource.signIn(email, password);
     }
 
-    // --- Metodi del callback (UserResponseCallback) ---
-
     @Override
     public void onSuccessFromAuthentication(User user) {
         if (user != null) {
-            // Dopo il login/registrazione, salva/verifica il profilo sulla Realtime Database
             userDataRemoteDataSource.saveUserData(user);
         }
     }
 
     @Override
     public void onFailureFromAuthentication(String message) {
-        User.Error result = new User.Error(message);
-        userMutableLiveData.postValue(result);
+        userMutableLiveData.postValue(new UserResult.Error(message));
     }
 
     @Override
     public void onSuccessFromRemoteDatabase(User user) {
-        User.Success result = new User.Success(user);
-        userMutableLiveData.postValue(result);
+        userMutableLiveData.postValue(new UserResult.Success(user));
     }
 
     @Override
     public void onFailureFromRemoteDatabase(String message) {
-        User.Error result = new User.Error(message);
-        userMutableLiveData.postValue(result);
+        userMutableLiveData.postValue(new UserResult.Error(message));
     }
 
     @Override
     public void onSuccessLogout() {
-        userMutableLiveData.postValue(new User.Success(null));
+        userMutableLiveData.postValue(new UserResult.Success(null));
     }
 }

@@ -40,4 +40,11 @@ public class Constants {
     public static final String FIREBASE_ERROR = "firebase_error";
 
     public static final String FIREBASE_USERS_COLLECTION = "users";
+
+    public static final String WEAK_PASSWORD_ERROR = "weak_password_error";
+    public static final String INVALID_CREDENTIALS_ERROR = "invalid_credentials_error";
+    public static final String INVALID_USER_ERROR = "invalid_user_error";
+    public static final String USER_COLLISION_ERROR = "user_collision_error";
+
+    public static final int MINIMUM_LENGTH_PASSWORD = 6;
 }

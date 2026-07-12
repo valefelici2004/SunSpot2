@@ -21,7 +21,7 @@ public class Spot implements Parcelable {
 
     private String firebaseId;
     private String name;
-    private String description;
+    private String posizione;
     private double latitude;
     private double longitude;
     private List<String> photoUrls;
@@ -29,7 +29,9 @@ public class Spot implements Parcelable {
     private boolean liked;
     private boolean addedByMe;
 
-    public Spot() {}
+    public Spot() {
+        photoUrls = new ArrayList<>();
+    }
 
     public long getUid() { return uid; }
     public void setUid(long uid) { this.uid = uid; }
@@ -40,8 +42,8 @@ public class Spot implements Parcelable {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getPosizione() { return posizione; }
+    public void setPosizione(String posizione) { this.posizione = posizione; }
 
     public double getLatitude() { return latitude; }
     public void setLatitude(double latitude) { this.latitude = latitude; }
@@ -61,7 +63,6 @@ public class Spot implements Parcelable {
     public boolean isAddedByMe() { return addedByMe; }
     public void setAddedByMe(boolean addedByMe) { this.addedByMe = addedByMe; }
 
-    // Metodo di comodo: genera il link Google Maps al volo, non salvato
     public String getGoogleMapsUri() {
         return "geo:0,0?q=" + latitude + "," + longitude + "(" + name + ")";
     }
@@ -82,7 +83,7 @@ public class Spot implements Parcelable {
     public static Spot getSampleSpot() {
         Spot sample = new Spot();
         sample.setName("Nome spot di esempio");
-        sample.setDescription("Descrizione di esempio");
+        sample.setPosizione("Posizione di esempio");
         return sample;
     }
 
@@ -96,7 +97,7 @@ public class Spot implements Parcelable {
         parcel.writeLong(this.uid);
         parcel.writeString(this.firebaseId);
         parcel.writeString(this.name);
-        parcel.writeString(this.description);
+        parcel.writeString(this.posizione);
         parcel.writeDouble(this.latitude);
         parcel.writeDouble(this.longitude);
         parcel.writeStringList(this.photoUrls);
@@ -109,7 +110,7 @@ public class Spot implements Parcelable {
         this.uid = in.readLong();
         this.firebaseId = in.readString();
         this.name = in.readString();
-        this.description = in.readString();
+        this.posizione = in.readString();
         this.latitude = in.readDouble();
         this.longitude = in.readDouble();
         this.photoUrls = new ArrayList<>();
