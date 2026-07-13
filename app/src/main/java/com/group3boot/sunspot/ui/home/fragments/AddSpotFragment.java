@@ -20,11 +20,13 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.group3boot.sunspot.R;
 import com.group3boot.sunspot.models.Spot;
 import com.group3boot.sunspot.repository.spot.SpotRepository;
-import com.group3boot.sunspot.ui.home.viewmodel.SpotViewModel;
-import com.group3boot.sunspot.ui.home.viewmodel.SpotViewModelFactory;
+import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModel;
+import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModelFactory;
 import com.group3boot.sunspot.util.Constants;
 import com.group3boot.sunspot.util.ServiceLocator;
-
+import com.group3boot.sunspot.repository.user.IUserRepository;
+import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModel;
+import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModelFactory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +39,8 @@ public class AddSpotFragment extends Fragment {
     private Uri selectedPhotoUri;
     private double latitude, longitude;
 
+    private UserViewModel userViewModel;
+
     private final ActivityResultLauncher<String> pickImageLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
@@ -48,6 +52,11 @@ public class AddSpotFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        IUserRepository userRepository = ServiceLocator.getInstance().getUserRepository();
+        userViewModel = new ViewModelProvider(
+                requireActivity(),
+                new UserViewModelFactory(userRepository)).get(UserViewModel.class);
 
         if (getArguments() != null) {
             latitude = getArguments().getDouble(Constants.BUNDLE_KEY_LATITUDE);
@@ -107,6 +116,10 @@ public class AddSpotFragment extends Fragment {
         spot.setLongitude(longitude);
         spot.setLiked(false);
         spot.setAddedByMe(true);
+
+        if (userViewModel.getLoggedUser() != null) {
+            spot.setAddedByUserId(userViewModel.getLoggedUser().getUid());   // ← riga mancante, ora aggiunta
+        }
 
         List<String> photoUrls = new ArrayList<>();
         if (selectedPhotoUri != null) {

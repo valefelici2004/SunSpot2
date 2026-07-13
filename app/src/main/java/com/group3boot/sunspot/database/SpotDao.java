@@ -23,8 +23,8 @@ public interface SpotDao {
     List<Spot> getLiked();
 
     //Lista spot inseriti da me
-    @Query("SELECT * FROM Spot WHERE addedByMe = 1")
-    List<Spot> getMySpots();
+    @Query("SELECT * FROM Spot WHERE addedByUserId = :userId")
+    List<Spot> getMySpots(String userId);
 
     //Trova uno spot dal suo ID Firestore, utile per la sincronizzazione
     @Query("SELECT * FROM Spot WHERE firebaseId = :firebaseId LIMIT 1")

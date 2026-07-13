@@ -32,6 +32,7 @@ import com.group3boot.sunspot.ui.home.weatherviewmodel.WeatherViewModelFactory;
 import com.group3boot.sunspot.util.Constants;
 import com.group3boot.sunspot.util.LocationUtil;
 import com.group3boot.sunspot.util.ServiceLocator;
+import com.group3boot.sunspot.util.WeatherUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +46,10 @@ public class HomeFragment extends Fragment {
     private SpotViewModel spotViewModel;
     private WeatherViewModel weatherViewModel;
 
-    private TextView textViewTemperature, textViewNoSpots;
+    private TextView textViewTemperature;
+    private TextView textViewWeatherDescription;
+    private TextView textViewSunriseSunset;
+    private TextView textViewNoSpots;
     private RecyclerView recyclerViewNearbySpots;
     private final List<Spot> nearbySpotList = new ArrayList<>();
 
@@ -91,6 +95,8 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         textViewTemperature = view.findViewById(R.id.textViewTemperature);
+        textViewWeatherDescription = view.findViewById(R.id.textViewWeatherDescription);
+        textViewSunriseSunset = view.findViewById(R.id.textViewSunriseSunset);
         textViewNoSpots = view.findViewById(R.id.textViewNoSpots);
         recyclerViewNearbySpots = view.findViewById(R.id.recyclerViewNearbySpots);
         recyclerViewNearbySpots.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -125,9 +131,19 @@ public class HomeFragment extends Fragment {
         weatherViewModel.getWeather(currentLatitude, currentLongitude)
                 .observe(getViewLifecycleOwner(), result -> {
                     if (result.isSuccess()) {
-                        double temp = ((WeatherResult.Success) result).getData()
-                                .getCurrent().getTemperature_2m();
+                        var weather = ((WeatherResult.Success) result).getData();
+                        double temp = weather.getCurrent().getTemperature_2m();
+                        int weatherCode = weather.getCurrent().getWeather_code();
+
                         textViewTemperature.setText(getString(R.string.temperature_format, temp));
+                        textViewWeatherDescription.setText(WeatherUtil.getWeatherDescription(weatherCode));
+
+                        if (weather.getDaily() != null && !weather.getDaily().getSunrise().isEmpty()) {
+                            String sunrise = WeatherUtil.formatTime(weather.getDaily().getSunrise().get(0));
+                            String sunset = WeatherUtil.formatTime(weather.getDaily().getSunset().get(0));
+                            textViewSunriseSunset.setText(
+                                    getString(R.string.sunrise_sunset_format, sunrise, sunset));
+                        }
                     } else {
                         textViewTemperature.setText(R.string.error_weather_unavailable);
                     }
@@ -160,4 +176,37 @@ public class HomeFragment extends Fragment {
         }
 
         Collections.sort(nearbySpotList, Comparator.comparingDouble(spot ->
-                LocationUtil.distanceInKm(currentLatitude, currentLongitude,
+                LocationUtil.distanceInKm(currentLatitude, currentLongitude, spot.getLatitude(), spot.getLongitude())));
+
+        if (nearbySpotList.isEmpty()) {
+            textViewNoSpots.setVisibility(View.VISIBLE);
+            recyclerViewNearbySpots.setVisibility(View.GONE);
+        } else {
+            textViewNoSpots.setVisibility(View.GONE);
+            recyclerViewNearbySpots.setVisibility(View.VISIBLE);
+
+            SpotRecyclerAdapter adapter = new SpotRecyclerAdapter(
+                    R.layout.card_spot,
+                    nearbySpotList,
+                    true,
+                    new SpotRecyclerAdapter.OnItemClickListener() {
+                        @Override
+                        public void onSpotItemClick(Spot spot) {
+                            Bundle bundle = new Bundle();
+                            bundle.putParcelable(Constants.BUNDLE_KEY_CURRENT_SPOT, spot);
+                            Navigation.findNavController(requireView())
+                                    .navigate(R.id.action_homeFragment_to_spotDetailFragment, bundle);
+                        }
+
+                        @Override
+                        public void onFavoriteButtonPressed(int position) {
+                            Spot spot = nearbySpotList.get(position);
+                            spot.setLiked(!spot.isLiked());
+                            spotViewModel.updateSpot(spot);
+                        }
+                    });
+
+            recyclerViewNearbySpots.setAdapter(adapter);
+        }
+    }
+}

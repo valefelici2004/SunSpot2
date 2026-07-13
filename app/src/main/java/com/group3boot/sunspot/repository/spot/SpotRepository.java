@@ -2,7 +2,6 @@ package com.group3boot.sunspot.repository.spot;
 
 import androidx.lifecycle.MutableLiveData;
 
-
 import com.group3boot.sunspot.util.Constants;
 import com.group3boot.sunspot.models.Spot;
 import com.group3boot.sunspot.models.SpotResult;
@@ -20,8 +19,8 @@ public class SpotRepository implements SpotCallback {
     private final MutableLiveData<SpotResult> allSpotsMutableLiveData;
     private final MutableLiveData<SpotResult> favoriteSpotsMutableLiveData;
     private final MutableLiveData<SpotResult> mySpotsMutableLiveData;
-
     private final MutableLiveData<SpotResult> addSpotMutableLiveData;
+
     private final BaseSpotRemoteDataSource spotRemoteDataSource;
     private final BaseSpotLocalDataSource spotLocalDataSource;
 
@@ -31,6 +30,7 @@ public class SpotRepository implements SpotCallback {
         allSpotsMutableLiveData = new MutableLiveData<>();
         favoriteSpotsMutableLiveData = new MutableLiveData<>();
         mySpotsMutableLiveData = new MutableLiveData<>();
+        addSpotMutableLiveData = new MutableLiveData<>();
         this.spotRemoteDataSource = spotRemoteDataSource;
         this.spotLocalDataSource = spotLocalDataSource;
         this.spotRemoteDataSource.setSpotCallback(this);
@@ -54,13 +54,14 @@ public class SpotRepository implements SpotCallback {
         return favoriteSpotsMutableLiveData;
     }
 
-    public MutableLiveData<SpotResult> getMySpots() {
-        spotLocalDataSource.getMySpots();
+    public MutableLiveData<SpotResult> getMySpots(String userId) {
+        spotLocalDataSource.getMySpots(userId);
         return mySpotsMutableLiveData;
     }
 
-    public void addSpot(Spot spot) {
+    public MutableLiveData<SpotResult> addSpot(Spot spot) {
         spotRemoteDataSource.addSpot(spot);
+        return addSpotMutableLiveData;
     }
 
     public void updateSpot(Spot spot) {
@@ -69,11 +70,6 @@ public class SpotRepository implements SpotCallback {
 
     public void deleteSpot(Spot spot) {
         spotRemoteDataSource.deleteSpot(spot);
-    }
-
-    public MutableLiveData<SpotResult> addSpot(Spot spot) {
-        spotRemoteDataSource.addSpot(spot);
-        return addSpotMutableLiveData;
     }
 
     // --- Metodi del callback ---
@@ -119,20 +115,14 @@ public class SpotRepository implements SpotCallback {
 
     @Override
     public void onAddSpotSuccess(Spot spot) {
-        // Dopo che Firestore conferma la creazione, salviamo anche una copia locale
-        spot.setAddedByMe(true);
-        spotLocalDataSource.insertSpot(spot);
-    }
-
-    @Override
-    public void onDeleteSpotSuccess(List<Spot> mySpots) {
-        mySpotsMutableLiveData.postValue(new SpotResult.Success(mySpots));
-    }
-
-    @Override
-    public void onAddSpotSuccess(Spot spot) {
         spot.setAddedByMe(true);
         spotLocalDataSource.insertSpot(spot);
         addSpotMutableLiveData.postValue(new SpotResult.Success(Collections.singletonList(spot)));
+    }
+
+    @Override
+    public void onDeleteSpotSuccess(Spot spot) {
+        // Dopo che Firestore conferma la cancellazione, rimuoviamo anche la copia locale
+        spotLocalDataSource.deleteSpot(spot);
     }
 }

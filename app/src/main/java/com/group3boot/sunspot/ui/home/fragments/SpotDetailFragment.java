@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.core.os.BundleCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.group3boot.sunspot.R;
@@ -21,12 +23,18 @@ import com.group3boot.sunspot.models.Spot;
 import com.group3boot.sunspot.models.WeatherResult;
 import com.group3boot.sunspot.repository.spot.SpotRepository;
 import com.group3boot.sunspot.repository.weather.WeatherRepository;
-import com.group3boot.sunspot.ui.home.viewmodel.SpotViewModel;
-import com.group3boot.sunspot.ui.home.viewmodel.SpotViewModelFactory;
-import com.group3boot.sunspot.ui.home.viewmodel.WeatherViewModel;
-import com.group3boot.sunspot.ui.home.viewmodel.WeatherViewModelFactory;
+import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModel;
+import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModelFactory;
+import com.group3boot.sunspot.ui.home.weatherviewmodel.WeatherViewModel;
+import com.group3boot.sunspot.ui.home.weatherviewmodel.WeatherViewModelFactory;
 import com.group3boot.sunspot.util.Constants;
 import com.group3boot.sunspot.util.ServiceLocator;
+import com.group3boot.sunspot.util.WeatherUtil;
+import android.widget.Button;
+import com.group3boot.sunspot.repository.user.IUserRepository;
+import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModel;
+import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModelFactory;
+import android.graphics.drawable.ColorDrawable;
 
 public class SpotDetailFragment extends Fragment {
 
@@ -34,9 +42,16 @@ public class SpotDetailFragment extends Fragment {
     private SpotViewModel spotViewModel;
     private WeatherViewModel weatherViewModel;
 
+    private UserViewModel userViewModel;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        IUserRepository userRepository = ServiceLocator.getInstance().getUserRepository();
+        userViewModel = new ViewModelProvider(
+                requireActivity(),
+                new UserViewModelFactory(userRepository)).get(UserViewModel.class);
 
         if (getArguments() != null) {
             spot = BundleCompat.getParcelable(getArguments(), Constants.BUNDLE_KEY_CURRENT_SPOT, Spot.class);
@@ -69,7 +84,7 @@ public class SpotDetailFragment extends Fragment {
         TextView textViewName = view.findViewById(R.id.textViewName);
         TextView textViewPosizione = view.findViewById(R.id.textViewPosizione);
         CheckBox favoriteButton = view.findViewById(R.id.favoriteButton);
-        android.widget.ImageView imageViewSpot = view.findViewById(R.id.imageViewSpot);
+        ImageView imageViewSpot = view.findViewById(R.id.imageViewSpot);
 
         textViewName.setText(spot.getName());
         textViewPosizione.setText(spot.getPosizione());
@@ -79,7 +94,7 @@ public class SpotDetailFragment extends Fragment {
                 ? spot.getPhotoUrls().get(0) : null;
         Glide.with(this)
                 .load(firstPhoto)
-                .placeholder(new android.graphics.drawable.ColorDrawable(
+                .placeholder(new ColorDrawable(
                         requireContext().getColor(R.color.md_theme_inverseOnSurface)))
                 .into(imageViewSpot);
 
@@ -99,10 +114,25 @@ public class SpotDetailFragment extends Fragment {
         });
 
         fetchWeather();
+
+        Button buttonDelete = view.findViewById(R.id.buttonDelete);
+        String loggedUserId = userViewModel.getLoggedUser() != null ? userViewModel.getLoggedUser().getUid() : null;
+
+        if (loggedUserId != null && loggedUserId.equals(spot.getAddedByUserId())) {
+            buttonDelete.setVisibility(View.VISIBLE);
+            buttonDelete.setOnClickListener(v -> {
+                spotViewModel.deleteSpot(spot);
+                Navigation.findNavController(requireView()).navigateUp();
+            });
+        } else {
+            buttonDelete.setVisibility(View.GONE);
+        }
+
     }
 
     private void fetchWeather() {
         TextView textViewTemperature = requireView().findViewById(R.id.textViewTemperature);
+        TextView textViewWeatherDescription = requireView().findViewById(R.id.textViewWeatherDescription);
         TextView textViewSunrise = requireView().findViewById(R.id.textViewSunrise);
         TextView textViewSunset = requireView().findViewById(R.id.textViewSunset);
 
@@ -112,12 +142,14 @@ public class SpotDetailFragment extends Fragment {
                         var weather = ((WeatherResult.Success) result).getData();
                         textViewTemperature.setText(
                                 getString(R.string.temperature_format, weather.getCurrent().getTemperature_2m()));
+                        textViewWeatherDescription.setText(
+                                WeatherUtil.getWeatherDescription(weather.getCurrent().getWeather_code()));
 
                         if (weather.getDaily() != null && !weather.getDaily().getSunrise().isEmpty()) {
-                            textViewSunrise.setText(getString(R.string.sunrise_format,
-                                    weather.getDaily().getSunrise().get(0)));
-                            textViewSunset.setText(getString(R.string.sunset_format,
-                                    weather.getDaily().getSunset().get(0)));
+                            String sunrise = WeatherUtil.formatTime(weather.getDaily().getSunrise().get(0));
+                            String sunset = WeatherUtil.formatTime(weather.getDaily().getSunset().get(0));
+                            textViewSunrise.setText(getString(R.string.sunrise_format, sunrise));
+                            textViewSunset.setText(getString(R.string.sunset_format, sunset));
                         }
                     } else {
                         textViewTemperature.setText(R.string.error_weather_unavailable);

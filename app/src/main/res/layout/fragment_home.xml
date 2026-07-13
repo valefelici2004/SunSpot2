@@ -19,6 +19,26 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/textViewWeatherDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        tools:text="Sereno"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTemperature" />
+
+    <TextView
+        android:id="@+id/textViewSunriseSunset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        tools:text="Alba: 05:39  •  Tramonto: 20:48"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewWeatherDescription" />
+
+    <TextView
         android:id="@+id/textViewNearbyTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,7 +46,7 @@
         android:text="@string/nearby_spots_title"
         android:textAppearance="?attr/textAppearanceTitleMedium"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewTemperature" />
+        app:layout_constraintTop_toBottomOf="@id/textViewSunriseSunset" />
 
     <TextView
         android:id="@+id/textViewNoSpots"

@@ -17,7 +17,7 @@ public abstract class BaseSpotLocalDataSource {
 
     public abstract void getSpots();
     public abstract void getFavoriteSpots();
-    public abstract void getMySpots();
+    public abstract void getMySpots(String userId);
     public abstract void updateSpot(Spot spot);
     public abstract void insertSpot(Spot spot);
     public abstract void insertSpots(List<Spot> spotList);

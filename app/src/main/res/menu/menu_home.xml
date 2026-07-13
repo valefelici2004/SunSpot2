@@ -3,20 +3,19 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/HomeFragment"
+        android:id="@+id/homeFragment"
         android:title="@string/home"
         android:icon="@drawable/outline_home_24"
         />
 
     <item
-        android:id="@+id/MapsFragment"
+        android:id="@+id/mapsFragment"
         android:title="@string/maps"
         android:icon="@drawable/outline_globe_location_pin_24"
-
         />
 
     <item
-        android:id="@+id/UserFragment"
+        android:id="@+id/userFragment"
         android:title="@string/user"
         android:icon="@drawable/outline_account_circle_24"
         />

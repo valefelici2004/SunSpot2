@@ -69,15 +69,15 @@ public class LoginFragment extends Fragment {
             String password = editTextPassword.getText() != null ? editTextPassword.getText().toString().trim() : "";
 
             if (isEmailOk(email) & isPasswordOk(password)) {
-                userViewModel.getUserMutableLiveData(name, email, password, false)
+                userViewModel.getUserMutableLiveData(null, email, password, true)
                         .observe(getViewLifecycleOwner(), result -> {
-                            progressBar.setVisibility(View.GONE);
-
                             if (result.isSuccess()) {
-                                Navigation.findNavController(v).navigate(R.id.action_signUpFragment2_to_homeActivity);
+                                Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_homeActivity);
                             } else {
                                 UserResult.Error errorResult = (UserResult.Error) result;
-                                showError(getErrorMessage(errorResult.getMessage()));
+                                Snackbar.make(requireActivity().findViewById(android.R.id.content),
+                                        getErrorMessage(errorResult.getMessage()),
+                                        Snackbar.LENGTH_SHORT).show();
                             }
                         });
             }

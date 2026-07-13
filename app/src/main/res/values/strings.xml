@@ -34,7 +34,7 @@
     <string name="sunrise_format">Alba: %s</string>
     <string name="sunset_format">Tramonto: %s</string>
     <string name="hint_spot_name">Nome dello spot</string>
-    <string name="hint_spot_posizione">Posizione (es. zona, città)</string>
+    <string name="hint_spot_posizione">Descrizione</string>
     <string name="action_save_spot">Salva spot</string>
     <string name="error_spot_name_empty">Inserisci un nome</string>
     <string name="avatar_utente">Avatar utente</string>
@@ -44,4 +44,6 @@
     <string name="i_miei_preferiti">I miei preferiti</string>
     <string name="nessun_preferito">Nessuno spot tra i preferiti</string>
     <string name="logout">Esci</string>
+    <string name="sunrise_sunset_format">Alba: %1$s  •  Tramonto: %2$s</string>
+    <string name="delete_spot">Elimina spot</string>
 </resources>

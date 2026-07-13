@@ -37,17 +37,17 @@ public class SpotViewModel extends ViewModel {
         return favoriteSpotsMutableLiveData;
     }
 
-    public MutableLiveData<SpotResult> getMySpots() {
+    public MutableLiveData<SpotResult> getMySpots(String userId) {
         if (mySpotsMutableLiveData == null) {
-            mySpotsMutableLiveData = spotRepository.getMySpots();
+            mySpotsMutableLiveData = spotRepository.getMySpots(userId);
         } else {
-            spotRepository.getMySpots();
+            spotRepository.getMySpots(userId);
         }
         return mySpotsMutableLiveData;
     }
 
-    public void addSpot(Spot spot) {
-        spotRepository.addSpot(spot);
+    public MutableLiveData<SpotResult> addSpot(Spot spot) {
+        return spotRepository.addSpot(spot);
     }
 
     public void updateSpot(Spot spot) {

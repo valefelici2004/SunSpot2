@@ -46,6 +46,6 @@ public class SpotMockDataSource extends BaseSpotRemoteDataSource {
 
     @Override
     public void deleteSpot(Spot spot) {
-        spotCallback.onDeleteSpotSuccess(null);
+        spotCallback.onDeleteSpotSuccess(spot);
     }
 }

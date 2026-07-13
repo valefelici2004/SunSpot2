@@ -40,9 +40,9 @@ public class SpotLocalDataSource extends BaseSpotLocalDataSource {
     }
 
     @Override
-    public void getMySpots() {
+    public void getMySpots(String userId) {
         SpotRoomDatabase.databaseWriteExecutor.execute(() -> {
-            spotCallback.onSuccessFromLocal(spotDao.getMySpots());
+            spotCallback.onSuccessFromLocal(spotDao.getMySpots(userId));
         });
     }
 
@@ -64,7 +64,7 @@ public class SpotLocalDataSource extends BaseSpotLocalDataSource {
         SpotRoomDatabase.databaseWriteExecutor.execute(() -> {
             List<Long> insertedIds = spotDao.insertSpotList(Collections.singletonList(spot));
             spot.setUid(insertedIds.get(0));
-            spotCallback.onAddSpotSuccess(spot);
+
         });
     }
 
@@ -99,7 +99,6 @@ public class SpotLocalDataSource extends BaseSpotLocalDataSource {
     public void deleteSpot(Spot spot) {
         SpotRoomDatabase.databaseWriteExecutor.execute(() -> {
             spotDao.delete(spot);
-            spotCallback.onDeleteSpotSuccess(spotDao.getMySpots());
         });
     }
 }

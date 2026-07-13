@@ -18,8 +18,8 @@ import com.group3boot.sunspot.R;
 import com.group3boot.sunspot.models.Spot;
 import com.group3boot.sunspot.models.SpotResult;
 import com.group3boot.sunspot.repository.spot.SpotRepository;
-import com.group3boot.sunspot.ui.home.viewmodel.SpotViewModel;
-import com.group3boot.sunspot.ui.home.viewmodel.SpotViewModelFactory;
+import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModel;
+import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModelFactory;
 import com.group3boot.sunspot.util.Constants;
 import com.group3boot.sunspot.util.ServiceLocator;
 

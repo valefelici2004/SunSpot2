@@ -11,5 +11,5 @@ public interface SpotCallback {
     void onFailureFromLocal(Exception exception);
     void onSpotFavoriteStatusChanged(Spot spot, List<Spot> favoriteSpots);
     void onAddSpotSuccess(Spot spot);
-    void onDeleteSpotSuccess(List<Spot> mySpots);
+    void onDeleteSpotSuccess(Spot spot);
 }

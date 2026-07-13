@@ -74,6 +74,14 @@
                     tools:text="22°C" />
 
                 <TextView
+                    android:id="@+id/textViewWeatherDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    tools:text="Sereno" />
+
+                <TextView
                     android:id="@+id/textViewSunrise"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -100,6 +108,21 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cardWeather" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonDelete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/delete_spot"
+            android:textColor="@color/md_theme_error"
+            android:visibility="gone"
+            app:icon="@android:drawable/ic_menu_delete"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/buttonOpenMaps" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,5 +1,6 @@
 package com.group3boot.sunspot.ui.home.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,8 +24,9 @@ import com.group3boot.sunspot.models.SpotResult;
 import com.group3boot.sunspot.models.User;
 import com.group3boot.sunspot.repository.spot.SpotRepository;
 import com.group3boot.sunspot.repository.user.IUserRepository;
-import com.group3boot.sunspot.ui.home.viewmodel.SpotViewModel;
-import com.group3boot.sunspot.ui.home.viewmodel.SpotViewModelFactory;
+import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModel;
+import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModelFactory;
+import com.group3boot.sunspot.ui.welcome.WelcommeActivity;
 import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModel;
 import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModelFactory;
 import com.group3boot.sunspot.util.Constants;
@@ -96,13 +98,18 @@ public class UserFragment extends Fragment {
             progressBar.setVisibility(View.VISIBLE);
             userViewModel.logout().observe(getViewLifecycleOwner(), result -> {
                 progressBar.setVisibility(View.GONE);
-                Navigation.findNavController(v).navigate(R.id.action_userFragment_to_welcommeActivity);
+                Intent intent = new Intent(getContext(), WelcommeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
             });
         });
     }
 
     private void loadMySpots() {
-        spotViewModel.getMySpots().observe(getViewLifecycleOwner(), result -> {
+        User loggedUser = userViewModel.getLoggedUser();
+        if (loggedUser == null) return;
+
+        spotViewModel.getMySpots(loggedUser.getUid()).observe(getViewLifecycleOwner(), result -> {
             if (result.isSuccess()) {
                 mySpotsList.clear();
                 mySpotsList.addAll(((SpotResult.Success) result).getData());
