@@ -50,4 +50,7 @@ public class Constants {
 
     public static final String BUNDLE_KEY_LATITUDE = "latitude";
     public static final String BUNDLE_KEY_LONGITUDE = "longitude";
+
+    public static final String SPOT_TYPE_SUNRISE = "sunrise";
+    public static final String SPOT_TYPE_SUNSET = "sunset";
 }

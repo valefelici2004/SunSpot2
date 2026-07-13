@@ -92,11 +92,22 @@ public class SpotDetailFragment extends Fragment {
 
         String firstPhoto = (spot.getPhotoUrls() != null && !spot.getPhotoUrls().isEmpty())
                 ? spot.getPhotoUrls().get(0) : null;
-        Glide.with(this)
-                .load(firstPhoto)
-                .placeholder(new ColorDrawable(
-                        requireContext().getColor(R.color.md_theme_inverseOnSurface)))
-                .into(imageViewSpot);
+
+        if (firstPhoto != null && firstPhoto.startsWith("http")) {
+            Glide.with(this)
+                    .load(firstPhoto)
+                    .placeholder(new ColorDrawable(requireContext().getColor(R.color.md_theme_inverseOnSurface)))
+                    .into(imageViewSpot);
+        } else if (firstPhoto != null) {
+            android.graphics.Bitmap bitmap = com.group3boot.sunspot.util.ImageUtil.decodeBase64(firstPhoto);
+            if (bitmap != null) {
+                imageViewSpot.setImageBitmap(bitmap);
+            } else {
+                imageViewSpot.setImageDrawable(new ColorDrawable(requireContext().getColor(R.color.md_theme_inverseOnSurface)));
+            }
+        } else {
+            imageViewSpot.setImageDrawable(new ColorDrawable(requireContext().getColor(R.color.md_theme_inverseOnSurface)));
+        }
 
         favoriteButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             spot.setLiked(isChecked);

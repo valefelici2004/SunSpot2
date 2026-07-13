@@ -1,7 +1,5 @@
 package com.group3boot.sunspot.source.spot;
 
-import static com.group3boot.sunspot.util.Constants.UNEXPECTED_ERROR;
-
 import com.group3boot.sunspot.database.SpotDao;
 import com.group3boot.sunspot.database.SpotRoomDatabase;
 import com.group3boot.sunspot.models.Spot;
@@ -54,7 +52,7 @@ public class SpotLocalDataSource extends BaseSpotLocalDataSource {
             if (rowUpdatedCounter == 1) {
                 spotCallback.onSpotFavoriteStatusChanged(spot, spotDao.getLiked());
             } else {
-                spotCallback.onFailureFromLocal(new Exception(UNEXPECTED_ERROR));
+                spotCallback.onFailureFromLocal(new Exception(Constants.UNEXPECTED_ERROR));
             }
         });
     }
@@ -64,7 +62,8 @@ public class SpotLocalDataSource extends BaseSpotLocalDataSource {
         SpotRoomDatabase.databaseWriteExecutor.execute(() -> {
             List<Long> insertedIds = spotDao.insertSpotList(Collections.singletonList(spot));
             spot.setUid(insertedIds.get(0));
-
+            // Nessuna chiamata a spotCallback.onAddSpotSuccess qui —
+            // altrimenti si crea un loop infinito con SpotRepository.onAddSpotSuccess
         });
     }
 
@@ -99,6 +98,8 @@ public class SpotLocalDataSource extends BaseSpotLocalDataSource {
     public void deleteSpot(Spot spot) {
         SpotRoomDatabase.databaseWriteExecutor.execute(() -> {
             spotDao.delete(spot);
+            // Nessuna callback qui: evitiamo lo stesso pattern
+            // che aveva causato il loop infinito con addSpot
         });
     }
 }

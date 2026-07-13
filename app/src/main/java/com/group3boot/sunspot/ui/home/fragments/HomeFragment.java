@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -48,8 +49,11 @@ public class HomeFragment extends Fragment {
 
     private TextView textViewTemperature;
     private TextView textViewWeatherDescription;
-    private TextView textViewSunriseSunset;
+    private TextView textViewLocationName;
+    private TextView textViewSunriseTime;
+    private TextView textViewSunsetTime;
     private TextView textViewNoSpots;
+    private ImageView imageViewWeatherIcon;
     private RecyclerView recyclerViewNearbySpots;
     private final List<Spot> nearbySpotList = new ArrayList<>();
 
@@ -96,7 +100,10 @@ public class HomeFragment extends Fragment {
 
         textViewTemperature = view.findViewById(R.id.textViewTemperature);
         textViewWeatherDescription = view.findViewById(R.id.textViewWeatherDescription);
-        textViewSunriseSunset = view.findViewById(R.id.textViewSunriseSunset);
+        textViewLocationName = view.findViewById(R.id.textViewLocationName);
+        imageViewWeatherIcon = view.findViewById(R.id.imageViewWeatherIcon);
+        textViewSunriseTime = view.findViewById(R.id.textViewSunriseTime);
+        textViewSunsetTime = view.findViewById(R.id.textViewSunsetTime);
         textViewNoSpots = view.findViewById(R.id.textViewNoSpots);
         recyclerViewNearbySpots = view.findViewById(R.id.recyclerViewNearbySpots);
         recyclerViewNearbySpots.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -118,6 +125,19 @@ public class HomeFragment extends Fragment {
 
                 fetchWeather();
                 fetchNearbySpots();
+
+                LocationUtil.getLocalityName(requireContext(), currentLatitude, currentLongitude,
+                        new LocationUtil.LocalityCallback() {
+                            @Override
+                            public void onLocalityFound(String locality) {
+                                textViewLocationName.setText(locality);
+                            }
+
+                            @Override
+                            public void onLocalityUnavailable() {
+                                textViewLocationName.setText(R.string.location_unknown);
+                            }
+                        });
             }
 
             @Override
@@ -137,12 +157,11 @@ public class HomeFragment extends Fragment {
 
                         textViewTemperature.setText(getString(R.string.temperature_format, temp));
                         textViewWeatherDescription.setText(WeatherUtil.getWeatherDescription(weatherCode));
+                        imageViewWeatherIcon.setImageResource(WeatherUtil.getWeatherIconRes(weatherCode));
 
                         if (weather.getDaily() != null && !weather.getDaily().getSunrise().isEmpty()) {
-                            String sunrise = WeatherUtil.formatTime(weather.getDaily().getSunrise().get(0));
-                            String sunset = WeatherUtil.formatTime(weather.getDaily().getSunset().get(0));
-                            textViewSunriseSunset.setText(
-                                    getString(R.string.sunrise_sunset_format, sunrise, sunset));
+                            textViewSunriseTime.setText(WeatherUtil.formatTime(weather.getDaily().getSunrise().get(0)));
+                            textViewSunsetTime.setText(WeatherUtil.formatTime(weather.getDaily().getSunset().get(0)));
                         }
                     } else {
                         textViewTemperature.setText(R.string.error_weather_unavailable);
@@ -187,7 +206,7 @@ public class HomeFragment extends Fragment {
 
             SpotRecyclerAdapter adapter = new SpotRecyclerAdapter(
                     R.layout.card_spot,
-                    nearbySpotList,
+                    nearbySpotList, // o mySpotsList / favoriteSpotsList a seconda del Fragment
                     true,
                     new SpotRecyclerAdapter.OnItemClickListener() {
                         @Override
@@ -204,7 +223,19 @@ public class HomeFragment extends Fragment {
                             spot.setLiked(!spot.isLiked());
                             spotViewModel.updateSpot(spot);
                         }
-                    });
+                    },
+                    (spot, callback) -> weatherViewModel.getWeather(spot.getLatitude(), spot.getLongitude())
+                            .observe(getViewLifecycleOwner(), result -> {
+                                if (result.isSuccess()) {
+                                    var weather = ((com.group3boot.sunspot.models.WeatherResult.Success) result).getData();
+                                    if (weather.getDaily() != null && !weather.getDaily().getSunrise().isEmpty()) {
+                                        String time = spot.isSunriseSpot()
+                                                ? WeatherUtil.formatTime(weather.getDaily().getSunrise().get(0))
+                                                : WeatherUtil.formatTime(weather.getDaily().getSunset().get(0));
+                                        callback.onTimeReady(time);
+                                    }
+                                }
+                            }));
 
             recyclerViewNearbySpots.setAdapter(adapter);
         }

@@ -63,6 +63,15 @@ public class Spot implements Parcelable {
     public boolean isAddedByMe() { return addedByMe; }
     public void setAddedByMe(boolean addedByMe) { this.addedByMe = addedByMe; }
 
+
+    private String type; // "sunrise" oppure "sunset"
+
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+
+    public boolean isSunriseSpot() {
+        return "sunrise".equals(type);
+    }
     public String getGoogleMapsUri() {
         return "geo:0,0?q=" + latitude + "," + longitude + "(" + name + ")";
     }
@@ -102,6 +111,7 @@ public class Spot implements Parcelable {
         parcel.writeDouble(this.longitude);
         parcel.writeStringList(this.photoUrls);
         parcel.writeString(this.addedByUserId);
+        parcel.writeString(this.type);
         parcel.writeByte(this.liked ? (byte) 1 : (byte) 0);
         parcel.writeByte(this.addedByMe ? (byte) 1 : (byte) 0);
     }
@@ -116,6 +126,7 @@ public class Spot implements Parcelable {
         this.photoUrls = new ArrayList<>();
         in.readStringList(this.photoUrls);
         this.addedByUserId = in.readString();
+        this.type = in.readString();
         this.liked = in.readByte() != 0;
         this.addedByMe = in.readByte() != 0;
     }

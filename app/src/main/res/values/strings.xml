@@ -46,4 +46,9 @@
     <string name="logout">Esci</string>
     <string name="sunrise_sunset_format">Alba: %1$s  •  Tramonto: %2$s</string>
     <string name="delete_spot">Elimina spot</string>
+    <string name="sunrise_label">Alba</string>
+    <string name="sunset_label">Tramonto</string>
+    <string name="location_unknown">Posizione sconosciuta</string>
+    <string name="error_photo_upload">Errore nel caricamento della foto</string>
+    <string name="spot_type_label">Tipo di spot</string>
 </resources>

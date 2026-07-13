@@ -6,7 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
+import android.graphics.drawable.Drawable;
+import androidx.core.content.ContextCompat;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -120,11 +121,14 @@ public class MapsFragment extends Fragment {
     private void showSpotsOnMap(List<Spot> spotList) {
         map.getOverlays().removeIf(overlay -> overlay instanceof Marker);
 
+        Drawable markerIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker);
+
         for (Spot spot : spotList) {
             GeoPoint point = new GeoPoint(spot.getLatitude(), spot.getLongitude());
             Marker marker = new Marker(map);
             marker.setPosition(point);
             marker.setTitle(spot.getName());
+            marker.setIcon(markerIcon);
             marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
 
             marker.setOnMarkerClickListener((clickedMarker, mapView) -> {
@@ -139,6 +143,7 @@ public class MapsFragment extends Fragment {
         }
         map.invalidate();
     }
+
 
     private void goToAddSpot(double latitude, double longitude) {
         Bundle bundle = new Bundle();

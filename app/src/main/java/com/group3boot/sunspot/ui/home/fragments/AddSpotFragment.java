@@ -16,30 +16,36 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.group3boot.sunspot.R;
 import com.group3boot.sunspot.models.Spot;
 import com.group3boot.sunspot.repository.spot.SpotRepository;
+import com.group3boot.sunspot.repository.user.IUserRepository;
 import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModel;
 import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModelFactory;
-import com.group3boot.sunspot.util.Constants;
-import com.group3boot.sunspot.util.ServiceLocator;
-import com.group3boot.sunspot.repository.user.IUserRepository;
 import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModel;
 import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModelFactory;
+import com.group3boot.sunspot.util.Constants;
+import com.group3boot.sunspot.util.ServiceLocator;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class AddSpotFragment extends Fragment {
 
     private SpotViewModel spotViewModel;
+    private UserViewModel userViewModel;
+
     private TextInputEditText editTextName, editTextPosizione;
     private ImageView imageViewPreview;
+    private MaterialButtonToggleGroup toggleSpotType;
     private View progressBar;
     private Uri selectedPhotoUri;
     private double latitude, longitude;
-
-    private UserViewModel userViewModel;
 
     private final ActivityResultLauncher<String> pickImageLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
@@ -53,11 +59,6 @@ public class AddSpotFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        IUserRepository userRepository = ServiceLocator.getInstance().getUserRepository();
-        userViewModel = new ViewModelProvider(
-                requireActivity(),
-                new UserViewModelFactory(userRepository)).get(UserViewModel.class);
-
         if (getArguments() != null) {
             latitude = getArguments().getDouble(Constants.BUNDLE_KEY_LATITUDE);
             longitude = getArguments().getDouble(Constants.BUNDLE_KEY_LONGITUDE);
@@ -69,6 +70,11 @@ public class AddSpotFragment extends Fragment {
         spotViewModel = new ViewModelProvider(
                 requireActivity(),
                 new SpotViewModelFactory(spotRepository)).get(SpotViewModel.class);
+
+        IUserRepository userRepository = ServiceLocator.getInstance().getUserRepository();
+        userViewModel = new ViewModelProvider(
+                requireActivity(),
+                new UserViewModelFactory(userRepository)).get(UserViewModel.class);
     }
 
     @Override
@@ -83,6 +89,7 @@ public class AddSpotFragment extends Fragment {
         editTextName = view.findViewById(R.id.editTextName);
         editTextPosizione = view.findViewById(R.id.editTextPosizione);
         imageViewPreview = view.findViewById(R.id.imageViewPreview);
+        toggleSpotType = view.findViewById(R.id.toggleSpotType);
         progressBar = view.findViewById(R.id.progressBar);
 
         view.findViewById(R.id.cardPhotoPicker).setOnClickListener(v -> pickImageLauncher.launch("image/*"));
@@ -92,7 +99,11 @@ public class AddSpotFragment extends Fragment {
             String posizione = editTextPosizione.getText() != null ? editTextPosizione.getText().toString().trim() : "";
 
             if (isNameOk(name)) {
-                saveSpot(name, posizione);
+                if (selectedPhotoUri != null) {
+                    uploadPhotoThenSave(name, posizione);
+                } else {
+                    saveSpot(name, posizione, null);
+                }
             }
         });
     }
@@ -106,7 +117,30 @@ public class AddSpotFragment extends Fragment {
         return true;
     }
 
-    private void saveSpot(String name, String posizione) {
+    private void uploadPhotoThenSave(String name, String posizione) {
+        progressBar.setVisibility(View.VISIBLE);
+
+        new Thread(() -> {
+            String base64Photo = null;
+            try {
+                base64Photo = com.group3boot.sunspot.util.ImageUtil.compressToBase64(requireContext(), selectedPhotoUri);
+            } catch (Exception e) {
+                // gestito sotto con base64Photo == null
+            }
+
+            String finalBase64Photo = base64Photo;
+            requireActivity().runOnUiThread(() -> {
+                if (finalBase64Photo != null) {
+                    saveSpot(name, posizione, finalBase64Photo);
+                } else {
+                    progressBar.setVisibility(View.GONE);
+                    editTextName.setError(getString(R.string.error_photo_upload));
+                }
+            });
+        }).start();
+    }
+
+    private void saveSpot(String name, String posizione, @Nullable String photoUrl) {
         progressBar.setVisibility(View.VISIBLE);
 
         Spot spot = new Spot();
@@ -117,13 +151,16 @@ public class AddSpotFragment extends Fragment {
         spot.setLiked(false);
         spot.setAddedByMe(true);
 
+        spot.setType(toggleSpotType.getCheckedButtonId() == R.id.buttonTypeSunrise
+                ? Constants.SPOT_TYPE_SUNRISE : Constants.SPOT_TYPE_SUNSET);
+
         if (userViewModel.getLoggedUser() != null) {
-            spot.setAddedByUserId(userViewModel.getLoggedUser().getUid());   // ← riga mancante, ora aggiunta
+            spot.setAddedByUserId(userViewModel.getLoggedUser().getUid());
         }
 
         List<String> photoUrls = new ArrayList<>();
-        if (selectedPhotoUri != null) {
-            photoUrls.add(selectedPhotoUri.toString());
+        if (photoUrl != null) {
+            photoUrls.add(photoUrl);
         }
         spot.setPhotoUrls(photoUrls);
 

@@ -1,0 +1,145 @@
+package com.group3boot.sunspot.ui.home.fragments;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.group3boot.sunspot.R;
+import com.group3boot.sunspot.adapter.SpotRecyclerAdapter;
+import com.group3boot.sunspot.models.Spot;
+import com.group3boot.sunspot.models.SpotResult;
+import com.group3boot.sunspot.models.WeatherResult;
+import com.group3boot.sunspot.models.User;
+import com.group3boot.sunspot.repository.spot.SpotRepository;
+import com.group3boot.sunspot.repository.user.IUserRepository;
+import com.group3boot.sunspot.repository.weather.WeatherRepository;
+import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModel;
+import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModelFactory;
+import com.group3boot.sunspot.ui.home.weatherviewmodel.WeatherViewModel;
+import com.group3boot.sunspot.ui.home.weatherviewmodel.WeatherViewModelFactory;
+import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModel;
+import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModelFactory;
+import com.group3boot.sunspot.util.Constants;
+import com.group3boot.sunspot.util.ServiceLocator;
+import com.group3boot.sunspot.util.WeatherUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MySpotsFragment extends Fragment {
+
+    private SpotViewModel spotViewModel;
+    private UserViewModel userViewModel;
+    private WeatherViewModel weatherViewModel;
+
+    private RecyclerView recyclerView;
+    private TextView textViewEmpty;
+    private final List<Spot> mySpotsList = new ArrayList<>();
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        boolean debugMode = getResources().getBoolean(R.bool.debug_mode);
+        SpotRepository spotRepository = ServiceLocator.getInstance()
+                .getSpotRepository(requireActivity().getApplication(), debugMode);
+        spotViewModel = new ViewModelProvider(
+                requireActivity(),
+                new SpotViewModelFactory(spotRepository)).get(SpotViewModel.class);
+
+        IUserRepository userRepository = ServiceLocator.getInstance().getUserRepository();
+        userViewModel = new ViewModelProvider(
+                requireActivity(),
+                new UserViewModelFactory(userRepository)).get(UserViewModel.class);
+
+        WeatherRepository weatherRepository = ServiceLocator.getInstance().getWeatherRepository();
+        weatherViewModel = new ViewModelProvider(
+                requireActivity(),
+                new WeatherViewModelFactory(weatherRepository)).get(WeatherViewModel.class);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_my_spots, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        recyclerView = view.findViewById(R.id.rv_my_spots);
+        textViewEmpty = view.findViewById(R.id.tv_my_spots_empty);
+        recyclerView.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext()));
+
+        User loggedUser = userViewModel.getLoggedUser();
+        if (loggedUser == null) return;
+
+        // Forza prima una sincronizzazione con Firestore, così Room è aggiornato
+        spotViewModel.getAllSpots(0).observe(getViewLifecycleOwner(), syncResult -> {
+            // Non ci serve il risultato qui, serve solo che il sync sia avvenuto
+            loadMySpots(loggedUser.getUid());
+        });
+    }
+
+    private void loadMySpots(String userId) {
+        spotViewModel.getMySpots(userId).observe(getViewLifecycleOwner(), result -> {
+            if (result.isSuccess()) {
+                mySpotsList.clear();
+                mySpotsList.addAll(((SpotResult.Success) result).getData());
+                updateUI();
+            }
+        });
+    }
+
+    private void updateUI() {
+        if (mySpotsList.isEmpty()) {
+            textViewEmpty.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        } else {
+            textViewEmpty.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+
+            recyclerView.setAdapter(new SpotRecyclerAdapter(
+                    R.layout.card_spot,
+                    mySpotsList,
+                    true,
+                    new SpotRecyclerAdapter.OnItemClickListener() {
+                        @Override
+                        public void onSpotItemClick(Spot spot) {
+                            Bundle bundle = new Bundle();
+                            bundle.putParcelable(Constants.BUNDLE_KEY_CURRENT_SPOT, spot);
+                            Navigation.findNavController(requireView())
+                                    .navigate(R.id.action_mySpotsFragment_to_spotDetailFragment, bundle);
+                        }
+
+                        @Override
+                        public void onFavoriteButtonPressed(int position) {
+                            Spot spot = mySpotsList.get(position);
+                            spot.setLiked(!spot.isLiked());
+                            spotViewModel.updateSpot(spot);
+                        }
+                    },
+                    (spot, callback) -> weatherViewModel.getWeather(spot.getLatitude(), spot.getLongitude())
+                            .observe(getViewLifecycleOwner(), result -> {
+                                if (result.isSuccess()) {
+                                    var weather = ((WeatherResult.Success) result).getData();
+                                    if (weather.getDaily() != null && !weather.getDaily().getSunrise().isEmpty()) {
+                                        String time = spot.isSunriseSpot()
+                                                ? WeatherUtil.formatTime(weather.getDaily().getSunrise().get(0))
+                                                : WeatherUtil.formatTime(weather.getDaily().getSunset().get(0));
+                                        callback.onTimeReady(time);
+                                    }
+                                }
+                            })));
+        }
+    }
+}

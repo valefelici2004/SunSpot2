@@ -50,4 +50,37 @@
         android:label="fragment_add_spot"
         tools:layout="@layout/fragment_add_spot" />
 
+    <fragment
+        android:id="@+id/userFragment"
+        android:name="com.group3boot.sunspot.ui.home.fragments.UserFragment"
+        android:label="fragment_user"
+        tools:layout="@layout/fragment_user" >
+        <action
+            android:id="@+id/action_userFragment_to_mySpotsFragment"
+            app:destination="@id/mySpotsFragment" />
+        <action
+            android:id="@+id/action_userFragment_to_favoriteSpotsFragment"
+            app:destination="@id/favoriteSpotsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mySpotsFragment"
+        android:name="com.group3boot.sunspot.ui.home.fragments.MySpotsFragment"
+        android:label="fragment_my_spots"
+        tools:layout="@layout/fragment_my_spots" >
+        <action
+            android:id="@+id/action_mySpotsFragment_to_spotDetailFragment"
+            app:destination="@id/spotDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/favoriteSpotsFragment"
+        android:name="com.group3boot.sunspot.ui.home.fragments.FavoriteSpotsFragment"
+        android:label="fragment_favorite_spots"
+        tools:layout="@layout/fragment_favorite_spots" >
+        <action
+            android:id="@+id/action_favoriteSpotsFragment_to_spotDetailFragment"
+            app:destination="@id/spotDetailFragment" />
+    </fragment>
+
 </navigation>
