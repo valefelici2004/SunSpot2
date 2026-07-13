@@ -148,8 +148,8 @@ public class AddSpotFragment extends Fragment {
         spot.setPosizione(posizione);
         spot.setLatitude(latitude);
         spot.setLongitude(longitude);
-        spot.setLiked(false);
-        spot.setAddedByMe(true);
+
+
 
         spot.setType(toggleSpotType.getCheckedButtonId() == R.id.buttonTypeSunrise
                 ? Constants.SPOT_TYPE_SUNRISE : Constants.SPOT_TYPE_SUNSET);

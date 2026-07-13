@@ -25,11 +25,14 @@ import com.group3boot.sunspot.models.Spot;
 import com.group3boot.sunspot.models.SpotResult;
 import com.group3boot.sunspot.models.WeatherResult;
 import com.group3boot.sunspot.repository.spot.SpotRepository;
+import com.group3boot.sunspot.repository.user.IUserRepository;
 import com.group3boot.sunspot.repository.weather.WeatherRepository;
 import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModel;
 import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModelFactory;
 import com.group3boot.sunspot.ui.home.weatherviewmodel.WeatherViewModel;
 import com.group3boot.sunspot.ui.home.weatherviewmodel.WeatherViewModelFactory;
+import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModel;
+import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModelFactory;
 import com.group3boot.sunspot.util.Constants;
 import com.group3boot.sunspot.util.LocationUtil;
 import com.group3boot.sunspot.util.ServiceLocator;
@@ -46,6 +49,7 @@ public class HomeFragment extends Fragment {
 
     private SpotViewModel spotViewModel;
     private WeatherViewModel weatherViewModel;
+    private UserViewModel userViewModel;
 
     private TextView textViewTemperature;
     private TextView textViewWeatherDescription;
@@ -87,6 +91,11 @@ public class HomeFragment extends Fragment {
         weatherViewModel = new ViewModelProvider(
                 requireActivity(),
                 new WeatherViewModelFactory(weatherRepository)).get(WeatherViewModel.class);
+
+        IUserRepository userRepository = ServiceLocator.getInstance().getUserRepository();
+        userViewModel = new ViewModelProvider(
+                requireActivity(),
+                new UserViewModelFactory(userRepository)).get(UserViewModel.class);
     }
 
     @Override
@@ -204,10 +213,14 @@ public class HomeFragment extends Fragment {
             textViewNoSpots.setVisibility(View.GONE);
             recyclerViewNearbySpots.setVisibility(View.VISIBLE);
 
+            String currentUserId = userViewModel.getLoggedUser() != null
+                    ? userViewModel.getLoggedUser().getUid() : "";
+
             SpotRecyclerAdapter adapter = new SpotRecyclerAdapter(
                     R.layout.card_spot,
-                    nearbySpotList, // o mySpotsList / favoriteSpotsList a seconda del Fragment
+                    nearbySpotList,
                     true,
+                    currentUserId,
                     new SpotRecyclerAdapter.OnItemClickListener() {
                         @Override
                         public void onSpotItemClick(Spot spot) {
@@ -220,14 +233,14 @@ public class HomeFragment extends Fragment {
                         @Override
                         public void onFavoriteButtonPressed(int position) {
                             Spot spot = nearbySpotList.get(position);
-                            spot.setLiked(!spot.isLiked());
-                            spotViewModel.updateSpot(spot);
+                            spotViewModel.toggleFavorite(spot, currentUserId)
+                                    .observe(getViewLifecycleOwner(), result -> {});
                         }
                     },
                     (spot, callback) -> weatherViewModel.getWeather(spot.getLatitude(), spot.getLongitude())
                             .observe(getViewLifecycleOwner(), result -> {
                                 if (result.isSuccess()) {
-                                    var weather = ((com.group3boot.sunspot.models.WeatherResult.Success) result).getData();
+                                    var weather = ((WeatherResult.Success) result).getData();
                                     if (weather.getDaily() != null && !weather.getDaily().getSunrise().isEmpty()) {
                                         String time = spot.isSunriseSpot()
                                                 ? WeatherUtil.formatTime(weather.getDaily().getSunrise().get(0))

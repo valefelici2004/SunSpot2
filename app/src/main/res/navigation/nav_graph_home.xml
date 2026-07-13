@@ -36,6 +36,12 @@
         <action
             android:id="@+id/action_userFragment_to_spotDetailFragment"
             app:destination="@id/spotDetailFragment" />
+        <action
+            android:id="@+id/action_userFragment_to_mySpotsFragment"
+            app:destination="@id/mySpotsFragment" />
+        <action
+            android:id="@+id/action_userFragment_to_favoriteSpotsFragment"
+            app:destination="@id/favoriteSpotsFragment" />
     </fragment>
 
     <fragment
@@ -49,19 +55,6 @@
         android:name="com.group3boot.sunspot.ui.home.fragments.AddSpotFragment"
         android:label="fragment_add_spot"
         tools:layout="@layout/fragment_add_spot" />
-
-    <fragment
-        android:id="@+id/userFragment"
-        android:name="com.group3boot.sunspot.ui.home.fragments.UserFragment"
-        android:label="fragment_user"
-        tools:layout="@layout/fragment_user" >
-        <action
-            android:id="@+id/action_userFragment_to_mySpotsFragment"
-            app:destination="@id/mySpotsFragment" />
-        <action
-            android:id="@+id/action_userFragment_to_favoriteSpotsFragment"
-            app:destination="@id/favoriteSpotsFragment" />
-    </fragment>
 
     <fragment
         android:id="@+id/mySpotsFragment"

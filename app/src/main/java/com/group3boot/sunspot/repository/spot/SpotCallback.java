@@ -7,9 +7,11 @@ import java.util.List;
 public interface SpotCallback {
     void onSuccessFromRemote(List<Spot> spotList, long lastUpdate);
     void onFailureFromRemote(Exception exception);
-    void onSuccessFromLocal(List<Spot> spotList);
+    void onSyncComplete();
+    void onMySpotsReady(List<Spot> spotList);
+    void onFavoriteSpotsReady(List<Spot> spotList);
     void onFailureFromLocal(Exception exception);
-    void onSpotFavoriteStatusChanged(Spot spot, List<Spot> favoriteSpots);
     void onAddSpotSuccess(Spot spot);
+    void onUpdateSpotSuccess(Spot spot);
     void onDeleteSpotSuccess(Spot spot);
 }

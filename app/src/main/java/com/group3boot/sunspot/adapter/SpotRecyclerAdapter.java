@@ -25,7 +25,6 @@ public class SpotRecyclerAdapter extends RecyclerView.Adapter<SpotRecyclerAdapte
         void onFavoriteButtonPressed(int position);
     }
 
-    // Chiamato dall'Adapter per chiedere al Fragment l'orario alba/tramonto di uno spot
     public interface OnSpotTimeRequestListener {
         void onRequestTime(Spot spot, SpotTimeCallback callback);
     }
@@ -37,6 +36,7 @@ public class SpotRecyclerAdapter extends RecyclerView.Adapter<SpotRecyclerAdapte
     private int layout;
     private List<Spot> spotList;
     private boolean heartVisible;
+    private String currentUserId;
     private Context context;
     private final OnItemClickListener onItemClickListener;
     private final OnSpotTimeRequestListener onSpotTimeRequestListener;
@@ -83,12 +83,13 @@ public class SpotRecyclerAdapter extends RecyclerView.Adapter<SpotRecyclerAdapte
         }
     }
 
-    public SpotRecyclerAdapter(int layout, List<Spot> spotList, boolean heartVisible,
+    public SpotRecyclerAdapter(int layout, List<Spot> spotList, boolean heartVisible, String currentUserId,
                                OnItemClickListener onItemClickListener,
                                OnSpotTimeRequestListener onSpotTimeRequestListener) {
         this.layout = layout;
         this.spotList = spotList;
         this.heartVisible = heartVisible;
+        this.currentUserId = currentUserId;
         this.onItemClickListener = onItemClickListener;
         this.onSpotTimeRequestListener = onSpotTimeRequestListener;
     }
@@ -110,7 +111,7 @@ public class SpotRecyclerAdapter extends RecyclerView.Adapter<SpotRecyclerAdapte
 
         viewHolder.getTextViewName().setText(currentSpot.getName());
         viewHolder.getTextViewPosizione().setText(currentSpot.getPosizione());
-        viewHolder.getFavoriteCheckbox().setChecked(currentSpot.isLiked());
+        viewHolder.getFavoriteCheckbox().setChecked(currentSpot.isFavoritedBy(currentUserId));
 
         boolean isSunrise = currentSpot.isSunriseSpot();
         viewHolder.getImageViewSpotTimeIcon().setImageResource(
@@ -121,7 +122,6 @@ public class SpotRecyclerAdapter extends RecyclerView.Adapter<SpotRecyclerAdapte
         viewHolder.getTextViewSpotTime().setText("--:--");
         if (onSpotTimeRequestListener != null) {
             onSpotTimeRequestListener.onRequestTime(currentSpot, time -> {
-                // Protezione: la view potrebbe essere stata riciclata nel frattempo
                 if (viewHolder.getBindingAdapterPosition() == position) {
                     viewHolder.getTextViewSpotTime().setText(time);
                 }
@@ -133,13 +133,11 @@ public class SpotRecyclerAdapter extends RecyclerView.Adapter<SpotRecyclerAdapte
                 : null;
 
         if (firstPhoto != null && firstPhoto.startsWith("http")) {
-            // URL remoto tradizionale
             Glide.with(context)
                     .load(firstPhoto)
                     .placeholder(new ColorDrawable(context.getColor(R.color.md_theme_inverseOnSurface)))
                     .into(viewHolder.getImageView());
         } else if (firstPhoto != null) {
-            // Stringa Base64
             android.graphics.Bitmap bitmap = com.group3boot.sunspot.util.ImageUtil.decodeBase64(firstPhoto);
             if (bitmap != null) {
                 viewHolder.getImageView().setImageBitmap(bitmap);

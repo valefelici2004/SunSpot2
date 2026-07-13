@@ -5,9 +5,6 @@ import com.group3boot.sunspot.models.Spot;
 
 import java.util.List;
 
-/**
- * Classe per ottenere gli spot da Firestore.
- */
 public class SpotRemoteDataSource extends BaseSpotRemoteDataSource {
 
     private static final String COLLECTION_SPOTS = "spots";
@@ -25,8 +22,6 @@ public class SpotRemoteDataSource extends BaseSpotRemoteDataSource {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Spot> spotList = queryDocumentSnapshots.toObjects(Spot.class);
 
-                    // Firestore non popola da solo firebaseId dentro l'oggetto,
-                    // va assegnato manualmente da ogni documento
                     for (int i = 0; i < spotList.size(); i++) {
                         spotList.get(i).setFirebaseId(queryDocumentSnapshots.getDocuments().get(i).getId());
                     }
@@ -48,11 +43,20 @@ public class SpotRemoteDataSource extends BaseSpotRemoteDataSource {
     }
 
     @Override
+    public void updateSpot(Spot spot) {
+        db.collection(COLLECTION_SPOTS)
+                .document(spot.getFirebaseId())
+                .set(spot)
+                .addOnSuccessListener(unused -> spotCallback.onUpdateSpotSuccess(spot))
+                .addOnFailureListener(e -> spotCallback.onFailureFromRemote(e));
+    }
+
+    @Override
     public void deleteSpot(Spot spot) {
         db.collection(COLLECTION_SPOTS)
                 .document(spot.getFirebaseId())
                 .delete()
-                .addOnSuccessListener(unused -> spotCallback.onDeleteSpotSuccess(null))
+                .addOnSuccessListener(unused -> spotCallback.onDeleteSpotSuccess(spot))
                 .addOnFailureListener(e -> spotCallback.onFailureFromRemote(e));
     }
 }

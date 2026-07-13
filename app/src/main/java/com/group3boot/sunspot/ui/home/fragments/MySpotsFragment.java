@@ -11,14 +11,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.group3boot.sunspot.R;
 import com.group3boot.sunspot.adapter.SpotRecyclerAdapter;
 import com.group3boot.sunspot.models.Spot;
 import com.group3boot.sunspot.models.SpotResult;
-import com.group3boot.sunspot.models.WeatherResult;
 import com.group3boot.sunspot.models.User;
+import com.group3boot.sunspot.models.WeatherResult;
 import com.group3boot.sunspot.repository.spot.SpotRepository;
 import com.group3boot.sunspot.repository.user.IUserRepository;
 import com.group3boot.sunspot.repository.weather.WeatherRepository;
@@ -78,14 +79,12 @@ public class MySpotsFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.rv_my_spots);
         textViewEmpty = view.findViewById(R.id.tv_my_spots_empty);
-        recyclerView.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         User loggedUser = userViewModel.getLoggedUser();
         if (loggedUser == null) return;
 
-        // Forza prima una sincronizzazione con Firestore, così Room è aggiornato
         spotViewModel.getAllSpots(0).observe(getViewLifecycleOwner(), syncResult -> {
-            // Non ci serve il risultato qui, serve solo che il sync sia avvenuto
             loadMySpots(loggedUser.getUid());
         });
     }
@@ -108,10 +107,13 @@ public class MySpotsFragment extends Fragment {
             textViewEmpty.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
 
+            String currentUserId = userViewModel.getLoggedUser().getUid();
+
             recyclerView.setAdapter(new SpotRecyclerAdapter(
                     R.layout.card_spot,
                     mySpotsList,
                     true,
+                    currentUserId,
                     new SpotRecyclerAdapter.OnItemClickListener() {
                         @Override
                         public void onSpotItemClick(Spot spot) {
@@ -124,8 +126,8 @@ public class MySpotsFragment extends Fragment {
                         @Override
                         public void onFavoriteButtonPressed(int position) {
                             Spot spot = mySpotsList.get(position);
-                            spot.setLiked(!spot.isLiked());
-                            spotViewModel.updateSpot(spot);
+                            spotViewModel.toggleFavorite(spot, currentUserId)
+                                    .observe(getViewLifecycleOwner(), result -> {});
                         }
                     },
                     (spot, callback) -> weatherViewModel.getWeather(spot.getLatitude(), spot.getLongitude())

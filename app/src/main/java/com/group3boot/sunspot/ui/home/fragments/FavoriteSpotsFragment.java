@@ -18,13 +18,17 @@ import com.group3boot.sunspot.R;
 import com.group3boot.sunspot.adapter.SpotRecyclerAdapter;
 import com.group3boot.sunspot.models.Spot;
 import com.group3boot.sunspot.models.SpotResult;
+import com.group3boot.sunspot.models.User;
 import com.group3boot.sunspot.models.WeatherResult;
 import com.group3boot.sunspot.repository.spot.SpotRepository;
+import com.group3boot.sunspot.repository.user.IUserRepository;
 import com.group3boot.sunspot.repository.weather.WeatherRepository;
 import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModel;
 import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModelFactory;
 import com.group3boot.sunspot.ui.home.weatherviewmodel.WeatherViewModel;
 import com.group3boot.sunspot.ui.home.weatherviewmodel.WeatherViewModelFactory;
+import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModel;
+import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModelFactory;
 import com.group3boot.sunspot.util.Constants;
 import com.group3boot.sunspot.util.ServiceLocator;
 import com.group3boot.sunspot.util.WeatherUtil;
@@ -35,6 +39,7 @@ import java.util.List;
 public class FavoriteSpotsFragment extends Fragment {
 
     private SpotViewModel spotViewModel;
+    private UserViewModel userViewModel;
     private WeatherViewModel weatherViewModel;
 
     private RecyclerView recyclerView;
@@ -51,6 +56,11 @@ public class FavoriteSpotsFragment extends Fragment {
         spotViewModel = new ViewModelProvider(
                 requireActivity(),
                 new SpotViewModelFactory(spotRepository)).get(SpotViewModel.class);
+
+        IUserRepository userRepository = ServiceLocator.getInstance().getUserRepository();
+        userViewModel = new ViewModelProvider(
+                requireActivity(),
+                new UserViewModelFactory(userRepository)).get(UserViewModel.class);
 
         WeatherRepository weatherRepository = ServiceLocator.getInstance().getWeatherRepository();
         weatherViewModel = new ViewModelProvider(
@@ -71,14 +81,16 @@ public class FavoriteSpotsFragment extends Fragment {
         textViewEmpty = view.findViewById(R.id.tv_favorites_empty);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Forza prima una sincronizzazione con Firestore, così Room è aggiornato
+        User loggedUser = userViewModel.getLoggedUser();
+        if (loggedUser == null) return;
+
         spotViewModel.getAllSpots(0).observe(getViewLifecycleOwner(), syncResult -> {
-            loadFavoriteSpots();
+            loadFavoriteSpots(loggedUser.getUid());
         });
     }
 
-    private void loadFavoriteSpots() {
-        spotViewModel.getFavoriteSpots().observe(getViewLifecycleOwner(), result -> {
+    private void loadFavoriteSpots(String userId) {
+        spotViewModel.getFavoriteSpots(userId).observe(getViewLifecycleOwner(), result -> {
             if (result.isSuccess()) {
                 favoriteSpotsList.clear();
                 favoriteSpotsList.addAll(((SpotResult.Success) result).getData());
@@ -95,10 +107,13 @@ public class FavoriteSpotsFragment extends Fragment {
             textViewEmpty.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
 
+            String currentUserId = userViewModel.getLoggedUser().getUid();
+
             recyclerView.setAdapter(new SpotRecyclerAdapter(
                     R.layout.card_spot,
                     favoriteSpotsList,
                     true,
+                    currentUserId,
                     new SpotRecyclerAdapter.OnItemClickListener() {
                         @Override
                         public void onSpotItemClick(Spot spot) {
@@ -111,8 +126,8 @@ public class FavoriteSpotsFragment extends Fragment {
                         @Override
                         public void onFavoriteButtonPressed(int position) {
                             Spot spot = favoriteSpotsList.get(position);
-                            spot.setLiked(!spot.isLiked());
-                            spotViewModel.updateSpot(spot);
+                            spotViewModel.toggleFavorite(spot, currentUserId)
+                                    .observe(getViewLifecycleOwner(), result -> {});
                         }
                     },
                     (spot, callback) -> weatherViewModel.getWeather(spot.getLatitude(), spot.getLongitude())

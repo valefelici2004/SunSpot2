@@ -5,9 +5,6 @@ import com.group3boot.sunspot.repository.spot.SpotCallback;
 
 import java.util.List;
 
-/**
- * Classe base per ottenere gli spot dal database locale (Room).
- */
 public abstract class BaseSpotLocalDataSource {
     protected SpotCallback spotCallback;
 
@@ -16,7 +13,7 @@ public abstract class BaseSpotLocalDataSource {
     }
 
     public abstract void getSpots();
-    public abstract void getFavoriteSpots();
+    public abstract void getFavoriteSpots(String userId);
     public abstract void getMySpots(String userId);
     public abstract void updateSpot(Spot spot);
     public abstract void insertSpot(Spot spot);

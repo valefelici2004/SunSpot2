@@ -85,7 +85,7 @@ public class ServiceLocator {
             spotRemoteDataSource = new SpotRemoteDataSource();
         }
 
-        spotLocalDataSource = new SpotLocalDataSource(getSpotDao(application), sharedPreferencesUtil);
+        spotLocalDataSource = new SpotLocalDataSource(getSpotDao(application));
 
         return new SpotRepository(spotRemoteDataSource, spotLocalDataSource);
     }

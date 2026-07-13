@@ -1,11 +1,13 @@
 package com.group3boot.sunspot.ui.home.fragments;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,26 +24,23 @@ import com.group3boot.sunspot.R;
 import com.group3boot.sunspot.models.Spot;
 import com.group3boot.sunspot.models.WeatherResult;
 import com.group3boot.sunspot.repository.spot.SpotRepository;
+import com.group3boot.sunspot.repository.user.IUserRepository;
 import com.group3boot.sunspot.repository.weather.WeatherRepository;
 import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModel;
 import com.group3boot.sunspot.ui.home.spotviewmodel.SpotViewModelFactory;
 import com.group3boot.sunspot.ui.home.weatherviewmodel.WeatherViewModel;
 import com.group3boot.sunspot.ui.home.weatherviewmodel.WeatherViewModelFactory;
+import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModel;
+import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModelFactory;
 import com.group3boot.sunspot.util.Constants;
 import com.group3boot.sunspot.util.ServiceLocator;
 import com.group3boot.sunspot.util.WeatherUtil;
-import android.widget.Button;
-import com.group3boot.sunspot.repository.user.IUserRepository;
-import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModel;
-import com.group3boot.sunspot.ui.welcome.viewmodel.UserViewModelFactory;
-import android.graphics.drawable.ColorDrawable;
 
 public class SpotDetailFragment extends Fragment {
 
     private Spot spot;
     private SpotViewModel spotViewModel;
     private WeatherViewModel weatherViewModel;
-
     private UserViewModel userViewModel;
 
     @Override
@@ -81,6 +80,9 @@ public class SpotDetailFragment extends Fragment {
 
         if (spot == null) return;
 
+        String currentUserId = userViewModel.getLoggedUser() != null
+                ? userViewModel.getLoggedUser().getUid() : null;
+
         TextView textViewName = view.findViewById(R.id.textViewName);
         TextView textViewPosizione = view.findViewById(R.id.textViewPosizione);
         CheckBox favoriteButton = view.findViewById(R.id.favoriteButton);
@@ -88,7 +90,7 @@ public class SpotDetailFragment extends Fragment {
 
         textViewName.setText(spot.getName());
         textViewPosizione.setText(spot.getPosizione());
-        favoriteButton.setChecked(spot.isLiked());
+        favoriteButton.setChecked(currentUserId != null && spot.isFavoritedBy(currentUserId));
 
         String firstPhoto = (spot.getPhotoUrls() != null && !spot.getPhotoUrls().isEmpty())
                 ? spot.getPhotoUrls().get(0) : null;
@@ -110,8 +112,10 @@ public class SpotDetailFragment extends Fragment {
         }
 
         favoriteButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            spot.setLiked(isChecked);
-            spotViewModel.updateSpot(spot);
+            if (currentUserId != null) {
+                spotViewModel.toggleFavorite(spot, currentUserId)
+                        .observe(getViewLifecycleOwner(), result -> {});
+            }
         });
 
         view.findViewById(R.id.buttonOpenMaps).setOnClickListener(v -> {
@@ -124,12 +128,8 @@ public class SpotDetailFragment extends Fragment {
             }
         });
 
-        fetchWeather();
-
         Button buttonDelete = view.findViewById(R.id.buttonDelete);
-        String loggedUserId = userViewModel.getLoggedUser() != null ? userViewModel.getLoggedUser().getUid() : null;
-
-        if (loggedUserId != null && loggedUserId.equals(spot.getAddedByUserId())) {
+        if (currentUserId != null && currentUserId.equals(spot.getAddedByUserId())) {
             buttonDelete.setVisibility(View.VISIBLE);
             buttonDelete.setOnClickListener(v -> {
                 spotViewModel.deleteSpot(spot);
@@ -139,6 +139,7 @@ public class SpotDetailFragment extends Fragment {
             buttonDelete.setVisibility(View.GONE);
         }
 
+        fetchWeather();
     }
 
     private void fetchWeather() {

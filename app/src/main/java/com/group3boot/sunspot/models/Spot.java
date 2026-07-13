@@ -26,11 +26,12 @@ public class Spot implements Parcelable {
     private double longitude;
     private List<String> photoUrls;
     private String addedByUserId;
-    private boolean liked;
-    private boolean addedByMe;
+    private List<String> favoritedByUserIds;
+    private String type; // "sunrise" oppure "sunset"
 
     public Spot() {
         photoUrls = new ArrayList<>();
+        favoritedByUserIds = new ArrayList<>();
     }
 
     public long getUid() { return uid; }
@@ -57,14 +58,8 @@ public class Spot implements Parcelable {
     public String getAddedByUserId() { return addedByUserId; }
     public void setAddedByUserId(String addedByUserId) { this.addedByUserId = addedByUserId; }
 
-    public boolean isLiked() { return liked; }
-    public void setLiked(boolean liked) { this.liked = liked; }
-
-    public boolean isAddedByMe() { return addedByMe; }
-    public void setAddedByMe(boolean addedByMe) { this.addedByMe = addedByMe; }
-
-
-    private String type; // "sunrise" oppure "sunset"
+    public List<String> getFavoritedByUserIds() { return favoritedByUserIds; }
+    public void setFavoritedByUserIds(List<String> favoritedByUserIds) { this.favoritedByUserIds = favoritedByUserIds; }
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
@@ -72,6 +67,22 @@ public class Spot implements Parcelable {
     public boolean isSunriseSpot() {
         return "sunrise".equals(type);
     }
+
+    // Restituisce true se QUESTO utente specifico ha messo preferito
+    public boolean isFavoritedBy(String userId) {
+        return favoritedByUserIds != null && favoritedByUserIds.contains(userId);
+    }
+
+    // Aggiunge/rimuove l'utente dalla lista dei preferiti
+    public void toggleFavorite(String userId) {
+        if (favoritedByUserIds == null) favoritedByUserIds = new ArrayList<>();
+        if (favoritedByUserIds.contains(userId)) {
+            favoritedByUserIds.remove(userId);
+        } else {
+            favoritedByUserIds.add(userId);
+        }
+    }
+
     public String getGoogleMapsUri() {
         return "geo:0,0?q=" + latitude + "," + longitude + "(" + name + ")";
     }
@@ -111,9 +122,8 @@ public class Spot implements Parcelable {
         parcel.writeDouble(this.longitude);
         parcel.writeStringList(this.photoUrls);
         parcel.writeString(this.addedByUserId);
+        parcel.writeStringList(this.favoritedByUserIds);
         parcel.writeString(this.type);
-        parcel.writeByte(this.liked ? (byte) 1 : (byte) 0);
-        parcel.writeByte(this.addedByMe ? (byte) 1 : (byte) 0);
     }
 
     protected Spot(Parcel in) {
@@ -126,9 +136,9 @@ public class Spot implements Parcelable {
         this.photoUrls = new ArrayList<>();
         in.readStringList(this.photoUrls);
         this.addedByUserId = in.readString();
+        this.favoritedByUserIds = new ArrayList<>();
+        in.readStringList(this.favoritedByUserIds);
         this.type = in.readString();
-        this.liked = in.readByte() != 0;
-        this.addedByMe = in.readByte() != 0;
     }
 
     public static final Parcelable.Creator<Spot> CREATOR = new Parcelable.Creator<Spot>() {

@@ -20,29 +20,17 @@ public class SpotViewModel extends ViewModel {
     }
 
     public MutableLiveData<SpotResult> getAllSpots(long lastUpdate) {
-        if (allSpotsMutableLiveData == null) {
-            allSpotsMutableLiveData = spotRepository.fetchSpots(lastUpdate);
-        } else {
-            spotRepository.fetchSpots(lastUpdate);
-        }
+        allSpotsMutableLiveData = spotRepository.fetchSpots(lastUpdate);
         return allSpotsMutableLiveData;
     }
 
-    public MutableLiveData<SpotResult> getFavoriteSpots() {
-        if (favoriteSpotsMutableLiveData == null) {
-            favoriteSpotsMutableLiveData = spotRepository.getFavoriteSpots();
-        } else {
-            spotRepository.getFavoriteSpots();
-        }
+    public MutableLiveData<SpotResult> getFavoriteSpots(String userId) {
+        favoriteSpotsMutableLiveData = spotRepository.getFavoriteSpots(userId);
         return favoriteSpotsMutableLiveData;
     }
 
     public MutableLiveData<SpotResult> getMySpots(String userId) {
-        if (mySpotsMutableLiveData == null) {
-            mySpotsMutableLiveData = spotRepository.getMySpots(userId);
-        } else {
-            spotRepository.getMySpots(userId);
-        }
+        mySpotsMutableLiveData = spotRepository.getMySpots(userId);
         return mySpotsMutableLiveData;
     }
 
@@ -50,8 +38,8 @@ public class SpotViewModel extends ViewModel {
         return spotRepository.addSpot(spot);
     }
 
-    public void updateSpot(Spot spot) {
-        spotRepository.updateSpot(spot);
+    public MutableLiveData<SpotResult> toggleFavorite(Spot spot, String userId) {
+        return spotRepository.toggleFavorite(spot, userId);
     }
 
     public void deleteSpot(Spot spot) {

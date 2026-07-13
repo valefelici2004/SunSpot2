@@ -14,23 +14,15 @@ import java.util.List;
 @Dao
 public interface SpotDao {
 
-    //Ottengo tutti gli spot insieme
     @Query("SELECT * FROM Spot")
     List<Spot> getAll();
 
-    //Lista preferiti
-    @Query("SELECT * FROM Spot WHERE liked = 1")
-    List<Spot> getLiked();
-
-    //Lista spot inseriti da me
     @Query("SELECT * FROM Spot WHERE addedByUserId = :userId")
     List<Spot> getMySpots(String userId);
 
-    //Trova uno spot dal suo ID Firestore, utile per la sincronizzazione
     @Query("SELECT * FROM Spot WHERE firebaseId = :firebaseId LIMIT 1")
     Spot getSpotByFirebaseId(String firebaseId);
 
-    //Salvo copia locale mio spot
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Spot spot);
 
@@ -40,7 +32,6 @@ public interface SpotDao {
     @Update
     int updateSpot(Spot spot);
 
-    //Eliminare uno spot
     @Delete
     void delete(Spot spot);
 
